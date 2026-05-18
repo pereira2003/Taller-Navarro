@@ -47,6 +47,13 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
         }
         @media (max-width: 767px) {
+            #products-gallery-container,
+            #view-gallery-btn {
+                display: none !important;
+            }
+            #products-grid {
+                display: grid !important;
+            }
             .gallery-container {
                 height: 440px;
                 margin-inline: 0;
@@ -422,6 +429,16 @@
             return `<div class="absolute top-3 right-3 px-4 py-1.5 rounded-full ${s.cls} backdrop-blur-xl border border-white/50 font-label-caps text-[10px] shadow-sm">${s.label}</div>`;
         }
 
+        function inlineStatusBadge(status) {
+            const map = {
+                IN_STOCK:     { label: "EN EXISTENCIA", cls: "bg-secondary-container/80 text-on-secondary-container" },
+                LOW_STOCK:    { label: "BAJO STOCK",     cls: "bg-error-container/80 text-on-error-container" },
+                OUT_OF_STOCK: { label: "SIN STOCK",     cls: "bg-error/20 text-error" }
+            };
+            const s = map[status] || map.IN_STOCK;
+            return `<span class="inline-flex px-3 py-1 rounded-full ${s.cls} border border-white/50 font-label-caps text-[9px] shadow-sm">${s.label}</span>`;
+        }
+
         // ── 3D Coverflow Carousel Logic ──────────────────────────
         function updateCarousel() {
             const cards = document.querySelectorAll(".gallery-card");
@@ -508,6 +525,40 @@
                     const qty = Number(p.quantity || 0);
                     const qtyColor = p.status === "LOW_STOCK" ? "text-error" :
                                      p.status === "OUT_OF_STOCK" ? "text-error" : "text-primary";
+                    const isMobile = isMobileInventory();
+                    if (isMobile) {
+                        return `
+                    <div class="liquid-glass rounded-2xl p-4 border border-white/60 shadow-sm cursor-pointer"
+                         onclick="window.location='product-details.html?id=${p.id}'">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary font-bold font-data-tabular border border-primary/20">${p.year || 2026}</span>
+                                    <span class="text-[10px] text-on-surface-variant/60 font-mono truncate">${p.sku || '—'}</span>
+                                </div>
+                                <h3 class="font-headline-lg text-base text-primary font-bold leading-tight">${p.name}</h3>
+                                <p class="text-xs text-on-surface-variant capitalize mt-1">${p.category || 'general'}</p>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <p class="text-[9px] font-label-caps text-on-surface-variant/60 uppercase tracking-widest">Existencia</p>
+                                <p class="font-data-tabular text-xl font-black ${qtyColor}">${qty.toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-white/30 flex items-center justify-between gap-3">
+                            <div>${inlineStatusBadge(p.status)}</div>
+                            <div class="flex gap-2">
+                                <button onclick="event.stopPropagation(); window.location='add-item.html?id=${p.id}'"
+                                        class="liquid-chip w-10 h-10 rounded-full flex items-center justify-center" title="Editar">
+                                    <span class="material-symbols-outlined text-primary text-lg">edit</span>
+                                </button>
+                                <button onclick="event.stopPropagation(); handleDelete('${p.id}', '${p.name}')"
+                                        class="liquid-chip w-10 h-10 rounded-full flex items-center justify-center" title="Eliminar">
+                                    <span class="material-symbols-outlined text-error text-lg">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                    }
                     const hasUserImage = !!p.imageUrl;
                     const catIcon = p.category === "pintura" ? "brush" : p.category === "enderezado" ? "car_repair" : "construction";
                     const imageHtml = hasUserImage ? `
