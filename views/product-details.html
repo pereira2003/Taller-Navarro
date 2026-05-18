@@ -66,13 +66,13 @@
                     <img id="product-img" alt="Product" class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-1000 ease-out image-integration relative z-10"
                          src="https://placehold.co/400x400/e1e1f5/5c5d6e?text=Loading...">
                 </div>
-                <div class="relative z-10 mt-4 flex justify-between items-end">
+                <div class="relative z-10 mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
                     <div>
                         <span id="product-id-badge" class="font-label-md text-label-sm px-4 py-1.5 bg-primary-container text-on-primary-container border border-primary/10 rounded-full mb-4 inline-block backdrop-blur-md">ID: —</span>
                         <h1 id="product-name" class="font-headline-lg text-headline-lg text-on-surface block tracking-tight">—</h1>
                         <p id="product-category" class="font-body-md text-on-surface-variant mt-1">—</p>
                     </div>
-                    <div class="text-right">
+                    <div class="text-left sm:text-right">
                         <p class="font-label-md text-label-sm text-on-surface-variant mb-1 uppercase">EXISTENCIA</p>
                         <p id="product-qty" class="font-display-lg text-display-lg text-primary">— <span class="text-headline-md opacity-50">unids</span></p>
                     </div>
@@ -359,5 +359,6 @@
             });
         }
     </script>
+    <script src="../assets/js/mobile-nav.js"></script>
 </body>
 </html>

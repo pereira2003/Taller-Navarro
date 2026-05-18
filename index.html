@@ -80,7 +80,7 @@
     <main class="pt-20 pb-24 px-margin-mobile md:ml-[340px] md:mr-margin-desktop md:pt-24">
 
         <!-- Page Header -->
-        <section class="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
+        <section class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
                 <h1 class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary via-tertiary to-primary leading-none mb-2 filter drop-shadow-sm">Taller Navarro</h1>
                 <p class="font-body-md text-on-surface-variant max-w-xl">Panel de control centralizado para gestión de inventario en tiempo real.</p>
@@ -177,7 +177,7 @@
                         <h3 class="font-headline-lg text-2xl text-primary font-bold">Salud del Inventario</h3>
                     </div>
                     <p class="text-on-surface-variant max-w-md mb-8 opacity-80 leading-relaxed relative z-10">Sus niveles de stock están optimizados para el trimestre actual. No se detectan anomalías en el Almacén.</p>
-                    <div class="grid grid-cols-2 gap-6 relative z-10">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
                         <div class="liquid-glass border-white/50 p-6 rounded-[2rem] bg-white/30">
                             <p class="font-label-caps text-[11px] text-on-surface-variant/70 mb-2 tracking-widest">TASA DE ROTACIÓN</p>
                             <p class="font-data-tabular text-3xl font-black text-primary">14.2%</p>
@@ -214,7 +214,7 @@
     <!-- BottomNavBar (Mobile Only) -->
     <nav class="md:hidden fixed bottom-6 left-margin-mobile right-margin-mobile flex justify-around p-4 z-50 liquid-glass rounded-full border border-white/60 shadow-2xl">
         <a class="flex flex-col items-center justify-center text-primary scale-110 z-10 relative" href="index.html">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
             <span class="font-label-caps text-[10px] mt-1 font-bold">Inicio</span>
         </a>
         <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="views/inventory.html">
@@ -233,5 +233,6 @@
 
     <!-- Firebase App Logic -->
     <script type="module" src="assets/js/app.js"></script>
+    <script src="assets/js/mobile-nav.js"></script>
 </body>
 </html>

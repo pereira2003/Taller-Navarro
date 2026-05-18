@@ -46,6 +46,28 @@
         .card-top-bar {
             background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
         }
+        @media (max-width: 767px) {
+            .gallery-container {
+                height: 440px;
+                margin-inline: 0;
+                overflow: visible;
+            }
+            .gallery-card {
+                width: min(86vw, 320px);
+                height: 400px;
+                border-radius: 1.5rem;
+            }
+            .gallery-card-inner {
+                border-radius: 1.5rem;
+            }
+            .card-top-bar {
+                padding: 0.85rem;
+            }
+            .gallery-card .glass-overlay-bottom {
+                min-height: 170px;
+                padding: 1.15rem;
+            }
+        }
     </style>
 </head>
 <body class="font-body-md text-on-surface selection:bg-primary-container selection:text-on-primary-container">
@@ -394,25 +416,26 @@
             cards.forEach((card, index) => {
                 const diff = index - activeIndex;
                 const absDiff = Math.abs(diff);
-
-                if (absDiff > 2) {
+                const isMobile = window.matchMedia("(max-width: 767px)").matches;
+                
+                if (absDiff > (isMobile ? 1 : 2)) {
                     card.style.opacity = "0";
                     card.style.pointerEvents = "none";
-                    card.style.transform = `translateX(${diff > 0 ? 400 : -400}px) scale(0.5) rotateY(${diff > 0 ? -45 : 45}deg)`;
+                    card.style.transform = `translateX(${diff > 0 ? 280 : -280}px) scale(0.72) rotateY(${diff > 0 ? -28 : 28}deg)`;
                     card.style.zIndex = "0";
                     return;
                 }
-
+                
                 card.style.opacity = "1";
                 card.style.pointerEvents = "auto";
-
-                let translateX = diff * 150;
-                let scale = 1 - absDiff * 0.15;
-                let rotateY = diff * -35;
-                let translateZ = -absDiff * 80;
-
+                
+                let translateX = diff * (isMobile ? 112 : 150);
+                let scale = 1 - absDiff * (isMobile ? 0.18 : 0.15);
+                let rotateY = diff * (isMobile ? -18 : -35);
+                let translateZ = -absDiff * (isMobile ? 36 : 80);
+                
                 if (diff === 0) {
-                    scale = 1.05;
+                    scale = isMobile ? 1 : 1.05;
                     rotateY = 0;
                     translateZ = 0;
                     card.classList.add("active-card");
@@ -645,6 +668,10 @@
             }
         });
 
+        window.addEventListener("resize", () => {
+            if (currentView === "gallery") updateCarousel();
+        });
+
         // ── Delete handler ───────────────────────────────────────
         window.handleDelete = async (id, name) => {
             if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
@@ -700,5 +727,6 @@
             renderProducts();
         });
     </script>
+    <script src="../assets/js/mobile-nav.js"></script>
 </body>
 </html>
