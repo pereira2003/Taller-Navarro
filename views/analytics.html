@@ -293,7 +293,8 @@
                 const yearStr = now.getFullYear();
 
                 if (logoImg) {
-                    doc.addImage(logoImg, 'PNG', 14, 8, 24, 16);
+                    // Renderizar con la mejor calidad de la imagen HD escalada
+                    doc.addImage(logoImg, 'PNG', 14, 8, 24, 16, undefined, 'FAST');
                 } else {
                     // Dibuja el logotipo circular del Taller Navarro
                     doc.setDrawColor(32, 92, 189); // Azul Taller #205cbd
