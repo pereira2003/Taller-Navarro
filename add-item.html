@@ -106,20 +106,14 @@
                     </div>
                 </div>
 
-                <!-- Row 2: Category + Supplier -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="form-label" for="category">Categoría</label>
-                        <select id="category" class="form-input">
-                            <option value="general">General</option>
-                            <option value="pintura">Pintura</option>
-                            <option value="enderezado">Enderezado</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label" for="supplier">Proveedor</label>
-                        <input id="supplier" class="form-input" type="text" placeholder="Ej. NEXUS Distribuidora">
-                    </div>
+                <!-- Row 2: Category -->
+                <div>
+                    <label class="form-label" for="category">Categoría</label>
+                    <select id="category" class="form-input">
+                        <option value="general">General</option>
+                        <option value="pintura">Pintura</option>
+                        <option value="enderezado">Enderezado</option>
+                    </select>
                 </div>
 
                 <!-- Row 3: Quantity + Unit Cost -->
@@ -132,12 +126,6 @@
                         <label class="form-label" for="unitCost">Costo Unitario (USD)</label>
                         <input id="unitCost" class="form-input font-data-tabular" type="number" min="0" step="0.01" placeholder="0.00">
                     </div>
-                </div>
-
-                <!-- Row 4: Warehouse Location -->
-                <div>
-                    <label class="form-label" for="warehouseLocation">Ubicación en Almacén</label>
-                    <input id="warehouseLocation" class="form-input" type="text" placeholder="Ej. Pasillo 3, Estante A1">
                 </div>
 
                 <!-- Row 5: Image URL -->
@@ -203,10 +191,8 @@
                 document.getElementById("name").value             = product.name || "";
                 document.getElementById("sku").value              = product.sku || "";
                 document.getElementById("category").value         = product.category || "general";
-                document.getElementById("supplier").value         = product.supplier || "";
                 document.getElementById("quantity").value         = product.quantity ?? "";
                 document.getElementById("unitCost").value         = product.unitCost ?? "";
-                document.getElementById("warehouseLocation").value= product.warehouseLocation || "";
                 document.getElementById("imageUrl").value         = product.imageUrl || "";
                 updatePreview();
                 updateStatusPreview();
@@ -271,11 +257,9 @@
                 name:              document.getElementById("name").value.trim(),
                 sku:               document.getElementById("sku").value.trim(),
                 category:          document.getElementById("category").value,
-                supplier:          document.getElementById("supplier").value.trim(),
                 quantity:          Number(document.getElementById("quantity").value) || 0,
                 reorderThreshold:  0,
                 unitCost:          parseFloat(document.getElementById("unitCost").value) || 0,
-                warehouseLocation: document.getElementById("warehouseLocation").value.trim(),
                 imageUrl:          document.getElementById("imageUrl").value.trim()
             };
 

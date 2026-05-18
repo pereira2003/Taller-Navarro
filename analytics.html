@@ -274,128 +274,106 @@
 
             try {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+                const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-                // ── Header ────────────────────────────────────────────
+                // ── Header (Logo & Date) ──────────────────────────────
                 const now = new Date();
-                const dateStr = now.toLocaleDateString("es-MX", {
-                    year: "numeric", month: "long", day: "numeric",
-                    hour: "2-digit", minute: "2-digit"
-                });
+                const yearStr = now.getFullYear();
 
-                // Background header bar
-                doc.setFillColor(92, 93, 110);
-                doc.rect(0, 0, 297, 28, "F");
-
-                // Logo text
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(20);
+                // Dibuja el logotipo circular del Taller Navarro
+                doc.setDrawColor(32, 92, 189); // Azul Taller #205cbd
+                doc.setLineWidth(0.6);
+                doc.circle(24, 20, 10, "D");
+                doc.setLineWidth(0.2);
+                doc.circle(24, 20, 8.8, "D");
+                
+                doc.setFontSize(6.5);
+                doc.setTextColor(32, 92, 189);
                 doc.setFont("helvetica", "bold");
-                doc.text("TALLER NAVARRO", 14, 12);
+                doc.text("TALLER", 24, 18.5, { align: "center" });
+                doc.setFontSize(5.5);
+                doc.text("NAVARRO", 24, 22.5, { align: "center" });
 
-                doc.setFontSize(9);
-                doc.setFont("helvetica", "normal");
-                doc.text("Reporte completo de inventario", 14, 20);
-
-                // Date top-right
-                doc.setFontSize(8);
-                doc.text(`Generado: ${dateStr}`, 297 - 14, 20, { align: "right" });
-
-                // ── Summary stats ─────────────────────────────────────
-                const total      = cachedProducts.reduce((s, p) => s + Number(p.quantity || 0), 0);
-                const inStock    = cachedProducts.filter(p => p.status === "IN_STOCK").length;
-                const lowStock   = cachedProducts.filter(p => p.status === "LOW_STOCK").length;
-                const outOfStock = cachedProducts.filter(p => p.status === "OUT_OF_STOCK").length;
-                const totalValue = cachedProducts.reduce((s, p) => s + (Number(p.quantity || 0) * Number(p.unitCost || 0)), 0);
-
-                doc.setTextColor(60, 60, 80);
-                doc.setFontSize(9);
+                // Fecha a la derecha
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
                 doc.setFont("helvetica", "bold");
+                doc.text(`Fecha : ${yearStr}`, 210 - 14, 20, { align: "right" });
 
-                const stats = [
-                    [`Total productos: ${cachedProducts.length}`, `Total unidades: ${total.toLocaleString()}`,
-                     `En stock: ${inStock}`, `Stock bajo: ${lowStock}`,
-                     `Sin stock: ${outOfStock}`, `Valor total: $${totalValue.toFixed(2)}`]
-                ];
-
-                doc.autoTable({
-                    startY: 31,
-                    body: stats,
-                    theme: "plain",
-                    styles: { fontSize: 8, cellPadding: 2, textColor: [60, 60, 80] },
-                    columnStyles: {
-                        0: { fontStyle: "bold", textColor: [92, 93, 110] },
-                        1: { fontStyle: "bold", textColor: [92, 93, 110] },
-                        2: { textColor: [20, 120, 60] },
-                        3: { textColor: [200, 80, 30] },
-                        4: { textColor: [180, 26, 26] },
-                        5: { fontStyle: "bold", textColor: [40, 80, 120] }
-                    },
-                    margin: { left: 14, right: 14 }
-                });
+                // Título Centralizado
+                doc.setFontSize(13);
+                doc.setFont("helvetica", "bold");
+                doc.text("Inventario de Herramientas", 105, 33, { align: "center" });
 
                 // ── Main table ────────────────────────────────────────
                 const head = [[
-                    "#", "Nombre del Producto", "SKU", "Categoría",
-                    "Cantidad", "Umbral Reorden", "Estado",
-                    "Ubicación", "Proveedor", "Costo Unit."
+                    "Herramienta", "Descripción breve", "Cantidad", "Uso principal", "Total"
                 ]];
 
-                const statusLabel = s => ({
-                    IN_STOCK: "En Stock", LOW_STOCK: "Stock Bajo", OUT_OF_STOCK: "Sin Stock"
-                }[s] || s || "—");
+                const categoryLabel = c => {
+                    const map = {
+                        general: "General",
+                        pintura: "Pintura",
+                        enderezado: "Enderezado"
+                    };
+                    return map[String(c).toLowerCase()] || String(c);
+                };
 
-                const body = cachedProducts.map((p, i) => [
-                    i + 1,
-                    p.name || "—",
-                    p.sku || "—",
-                    p.category || "—",
-                    Number(p.quantity || 0).toLocaleString(),
-                    p.reorderThreshold ? Number(p.reorderThreshold).toLocaleString() : "—",
-                    statusLabel(p.status),
-                    p.warehouseLocation || "—",
-                    p.supplier || "—",
-                    p.unitCost ? `$${Number(p.unitCost).toFixed(2)}` : "—"
-                ]);
+                const body = cachedProducts.map((p) => {
+                    const qty = Number(p.quantity || 0);
+                    const cost = Number(p.unitCost || 0);
+                    const totalVal = qty * cost;
+                    const cat = categoryLabel(p.category || "general");
+                    return [
+                        p.name || "—",
+                        `Item de taller (SKU: ${p.sku || "—"})`,
+                        qty.toLocaleString(),
+                        cat,
+                        `$${totalVal.toFixed(2)}`
+                    ];
+                });
 
                 if (body.length === 0) {
-                    body.push([{ content: "No hay productos en el inventario.", colSpan: 10, styles: { halign: "center", textColor: [150,150,150] } }]);
+                    body.push([{ content: "No hay herramientas registradas en el inventario.", colSpan: 5, styles: { halign: "center", textColor: [150,150,150] } }]);
                 }
 
                 doc.autoTable({
-                    startY: doc.lastAutoTable.finalY + 6,
+                    startY: 37,
                     head,
                     body,
                     theme: "grid",
                     headStyles: {
-                        fillColor: [92, 93, 110],
-                        textColor: 255,
+                        fillColor: [32, 92, 189], // Azul clásico #205cbd
+                        textColor: [255, 255, 255],
                         fontStyle: "bold",
-                        fontSize: 8,
-                        cellPadding: 4
+                        fontSize: 9,
+                        cellPadding: 3,
+                        halign: "left"
                     },
-                    bodyStyles: { fontSize: 7.5, cellPadding: 3 },
-                    alternateRowStyles: { fillColor: [245, 246, 250] },
+                    bodyStyles: { 
+                        fontSize: 8, 
+                        cellPadding: 3, 
+                        textColor: [0, 0, 0] 
+                    },
+                    styles: {
+                        lineColor: [180, 180, 180],
+                        lineWidth: 0.1
+                    },
                     columnStyles: {
-                        0:  { halign: "center", cellWidth: 8 },
-                        4:  { halign: "right" },
-                        5:  { halign: "right" },
-                        6:  { halign: "center",
-                              textColor: (cell) => {
-                                  const v = cell.raw;
-                                  if (v === "En Stock") return [20, 120, 60];
-                                  if (v === "Stock Bajo") return [200, 80, 30];
-                                  return [180, 26, 26];
-                              }
-                        },
-                        9:  { halign: "right" }
+                        0: { halign: "left", cellWidth: 55 },
+                        1: { halign: "left", cellWidth: 65 },
+                        2: { halign: "center", fontStyle: "bold", cellWidth: 20 },
+                        3: { halign: "center", cellWidth: 32 },
+                        4: { halign: "right", fontStyle: "bold", cellWidth: 20 }
                     },
                     didParseCell(data) {
-                        if (data.column.index === 6 && data.section === "body") {
-                            const v = data.cell.raw;
-                            if (v === "En Stock")   data.cell.styles.textColor = [20, 120, 60];
-                            if (v === "Stock Bajo") data.cell.styles.textColor = [200, 80, 30];
-                            if (v === "Sin Stock")  data.cell.styles.textColor = [180, 26, 26];
+                        // Align header text to match column align
+                        if (data.section === "head") {
+                            if (data.column.index === 2 || data.column.index === 3) {
+                                data.cell.styles.halign = "center";
+                            } else if (data.column.index === 4) {
+                                data.cell.styles.halign = "right";
+                            }
                         }
                     },
                     margin: { left: 14, right: 14 }
@@ -403,18 +381,19 @@
 
                 // ── Footer ────────────────────────────────────────────
                 const pageCount = doc.internal.getNumberOfPages();
+                const dateStr = now.toLocaleDateString("es-MX", { year: "numeric", month: "2-digit", day: "2-digit" });
                 for (let i = 1; i <= pageCount; i++) {
                     doc.setPage(i);
                     doc.setFontSize(7);
                     doc.setTextColor(150);
                     doc.text(
-                        `Taller Navarro • Página ${i} de ${pageCount} • ${dateStr}`,
-                        148.5, 205, { align: "center" }
+                        `Taller Navarro • Página ${i} de ${pageCount} • Descargado: ${dateStr}`,
+                        105, 287, { align: "center" }
                     );
                 }
 
                 // ── Save ──────────────────────────────────────────────
-                const fileName = `inventario_${now.toISOString().slice(0,10)}.pdf`;
+                const fileName = `inventario_taller_${now.toISOString().slice(0,10)}.pdf`;
                 doc.save(fileName);
 
             } catch(err) {
