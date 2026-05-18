@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Taller Navarro - Agregar / Editar Item</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="tailwind.config.js"></script>
+    <script src="../tailwind.config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
@@ -42,10 +42,21 @@
             background: linear-gradient(135deg, #5c5d6e 0%, #526069 100%);
             color: white; padding: 1rem 1.5rem; border-radius: 1rem;
             font-weight: 600; font-size: 0.9rem; z-index: 9999;
-            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition:
+                transform 0.4s cubic-bezier(0.34,1.56,0.64,1),
+                opacity 0.2s ease,
+                visibility 0s linear 0.4s;
             display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition:
+                transform 0.4s cubic-bezier(0.34,1.56,0.64,1),
+                opacity 0.2s ease;
+        }
     </style>
 </head>
 <body class="font-body-md text-on-surface">
@@ -144,6 +155,10 @@
                     <label class="form-label" for="imageUrl">URL de la Imagen del Producto</label>
                     <input id="imageUrl" class="form-input" type="url" placeholder="https://...">
                     <p class="text-xs text-on-surface-variant/60 mt-2 ml-1">Pegue una URL directa de imagen. Deje vacío para usar un marcador de posición.</p>
+                    <div id="low-res-warning" class="hidden mt-3 p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-start gap-2.5 text-amber-800 text-xs">
+                        <span class="material-symbols-outlined text-amber-600 text-sm shrink-0">warning</span>
+                        <span><strong>Miniatura detectada:</strong> Has pegado una miniatura de Google Search (baja resolución). Para que la herramienta se vea en alta definición en tu panel, haz clic derecho sobre la imagen grande original de Google y elige <em>"Copiar dirección de imagen"</em>.</span>
+                    </div>
                 </div>
 
                 <!-- Divider -->

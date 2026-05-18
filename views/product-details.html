@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Taller Navarro - Detalles del Producto</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="tailwind.config.js"></script>
+    <script src="../tailwind.config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
@@ -15,7 +15,7 @@
     <div class="blob w-[600px] h-[600px] bg-primary-container/30 -top-20 -left-20"></div>
     <div class="blob w-[400px] h-[400px] bg-secondary-container/20 bottom-20 right-20" style="animation-delay: -5s;"></div>
     <div class="blob w-[300px] h-[300px] bg-tertiary-container/30 top-1/2 left-1/3" style="animation-delay: -10s;"></div>
-    
+
     <!-- TopAppBar -->
     <nav class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-[1440px] mx-auto rounded-full mt-4 mx-margin-desktop px-6 py-3 bg-white/20 border border-white/60 shadow-xl backdrop-blur-3xl specular-highlight">
         <div class="flex items-center gap-8 relative z-10">
@@ -39,7 +39,7 @@
             </button>
         </div>
     </nav>
-    
+
     <!-- Loading overlay -->
     <div id="loading-overlay" class="fixed inset-0 z-40 flex items-center justify-center bg-white/20 backdrop-blur-sm">
         <div class="liquid-glass rounded-3xl p-8 flex flex-col items-center gap-4">
@@ -61,7 +61,7 @@
                 <button id="edit-btn" class="absolute top-8 right-8 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white/40 backdrop-blur-xl border border-white/60 scale-95 active:scale-90 transition-transform shadow-lg">
                     <span class="material-symbols-outlined text-primary">edit</span>
                 </button>
-                <div class="aspect-square w-full flex items-center justify-center p-12 relative z-10">
+                <div id="product-img-container" class="aspect-square w-full flex items-center justify-center p-12 relative z-10">
                     <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-3xl transform scale-75 group-hover:scale-90 transition-transform duration-700"></div>
                     <img id="product-img" alt="Product" class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-1000 ease-out image-integration relative z-10"
                          src="https://placehold.co/400x400/e1e1f5/5c5d6e?text=Loading...">
@@ -78,7 +78,10 @@
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Low resolution warning notification -->
+            <div id="low-res-warning-container" class="hidden"></div>
+
             <!-- Stock History Card (static visualization) -->
             <div class="deep-glass rounded-[40px] p-8 relative overflow-hidden">
                 <div class="specular-highlight opacity-20"></div>
@@ -204,10 +207,110 @@
                     return;
                 }
 
+                // Helper to get beautiful images for tools
+                function getDynamicToolImage(productName, category, description) {
+                    const name = (productName || "").toLowerCase();
+                    const cat = (category || "").toLowerCase();
+                    const desc = (description || "").toLowerCase();
+
+                    // ─── 1. TALADROS & PERFORACIÓN ──────────────────────────
+                    if (name.includes("taladro") || name.includes("broca") || desc.includes("taladro") || desc.includes("perforar")) {
+                        return "https://images.unsplash.com/photo-1504148455328-c376907d081c?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 2. CORTE, LIJADO & ESMERILADO ────────────────────────
+                    if (name.includes("amoladora") || name.includes("dremel") || name.includes("trozadora") || name.includes("sierra") || name.includes("serrucho") || name.includes("tijera") || desc.includes("amoladora") || desc.includes("grinder") || desc.includes("esmeril") || desc.includes("cortar") || desc.includes("corte")) {
+                        return "https://images.unsplash.com/photo-1534224039826-c7a0dea0e66a?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 3. SOLDADURA & UNIÓN METÁLICA ────────────────────────
+                    if (name.includes("soldadura") || name.includes("spotter") || name.includes("autogena") || name.includes("soldar") || name.includes("alambre") || desc.includes("soldar") || desc.includes("soldadura") || desc.includes("unir metales")) {
+                        return "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 4. DESABOLLADO & ENDEREZADO (MARTILLOS, SACAGOLPES) ───
+                    if (name.includes("martillo") || name.includes("bola") || name.includes("deslizante") || name.includes("sacagolpes") || name.includes("botador") || name.includes("palanca") || name.includes("barra") || name.includes("uña") || name.includes("tibadera") || name.includes("tas") || desc.includes("martillo") || desc.includes("golpe") || desc.includes("abolladura") || desc.includes("desabollado") || desc.includes("chapa")) {
+                        return "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 5. PINTURA, SPRAY & CABINA ──────────────────────────
+                    if (name.includes("pistola") || name.includes("pintar") || name.includes("pintura") || name.includes("masilla") || name.includes("colador") || name.includes("cinta") || name.includes("enmascarar") || name.includes("manguera") || desc.includes("pintura") || desc.includes("pintar") || desc.includes("laca") || desc.includes("masilla")) {
+                        return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 6. HERRAMIENTAS MANUALES GENERALES ───────────────────
+                    if (name.includes("destornillador") || name.includes("alicate") || name.includes("llave") || name.includes("corta") || name.includes("pinza") || name.includes("tenaza") || name.includes("mordaza") || name.includes("prensa") || name.includes("remachadora") || name.includes("grapa") || name.includes("carraca") || name.includes("rach") || desc.includes("apretar") || desc.includes("aflojar") || desc.includes("sujeción")) {
+                        return "https://images.unsplash.com/photo-1581783898377-1c85bf937427?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 7. GATOS, IZADO & ELEVADORES ────────────────────────
+                    if (name.includes("gato") || name.includes("elevador") || name.includes("hidraulico") || name.includes("hidráulica") || name.includes("yac") || name.includes("mica") || name.includes("tecle") || name.includes("caballetes") || desc.includes("elevar") || desc.includes("levantar") || desc.includes("izaje")) {
+                        return "https://images.unsplash.com/photo-1563720223185-11003d516935?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 8. LIJADO & DETALLADO ──────────────────────────────
+                    if (name.includes("lijadora") || name.includes("orbital") || name.includes("pulidora") || name.includes("pulir") || desc.includes("lijado") || desc.includes("pulido") || desc.includes("acabado")) {
+                        return "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 9. ORGANIZADORES & COMPRESORES ──────────────────────
+                    if (name.includes("carro") || name.includes("portaherramientas") || name.includes("compresor") || name.includes("regulador") || name.includes("aire") || name.includes("extractor") || desc.includes("organizar") || desc.includes("compresor") || desc.includes("aire")) {
+                        return "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 10. CATEGORY FALLBACKS ──────────────────────────────
+                    if (cat.includes("pintura")) {
+                        return "https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=95&w=1200&auto=format&fit=crop";
+                    }
+                    if (cat.includes("enderezado") || cat.includes("chapa")) {
+                        return "https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=95&w=1200&auto=format&fit=crop";
+                    }
+
+                    // ─── 11. GLOBAL WORKSHOP FALLBACK ────────────────────────
+                    return "https://images.unsplash.com/photo-1530124566582-a618bc2615ad?q=95&w=1200&auto=format&fit=crop";
+                }
+
                 // ── Populate UI ──────────────────────────────────────
-                const fallbackImg = `https://placehold.co/400x400/e1e1f5/5c5d6e?text=${encodeURIComponent(p.name)}`;
-                document.getElementById("product-img").src         = p.imageUrl || fallbackImg;
-                document.getElementById("product-img").onerror     = () => document.getElementById("product-img").src = fallbackImg;
+                const hasUserImage = !!p.imageUrl;
+                const isLowRes = (p.imageUrl || "").includes("gstatic.com") || (p.imageUrl || "").includes("encrypted-tbn");
+
+                const imgContainer = document.getElementById("product-img-container");
+                if (hasUserImage) {
+                    imgContainer.innerHTML = `
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-3xl transform scale-75 group-hover:scale-90 transition-transform duration-700"></div>
+                        <img id="product-img" alt="Product" class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-1000 ease-out image-integration relative z-10 image-rendering-crisp"
+                             src="${p.imageUrl}">
+                    `;
+                } else {
+                    const catIcon = p.category === "pintura" ? "brush" : p.category === "enderezado" ? "car_repair" : "construction";
+                    imgContainer.innerHTML = `
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl transform scale-75 group-hover:scale-90 transition-transform duration-700"></div>
+                        <div class="relative z-10 flex flex-col items-center justify-center gap-4 text-primary/30 text-center">
+                            <div class="w-32 h-32 rounded-full bg-white/30 backdrop-blur-xl border border-white/50 flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform duration-700">
+                                <span class="material-symbols-outlined text-[64px] text-primary/50">${catIcon}</span>
+                            </div>
+                            <span class="font-label-caps text-xs tracking-[0.25em] text-primary/55 font-bold uppercase mt-2">Sin Imagen</span>
+                        </div>
+                    `;
+                }
+
+                // Show warning helper for low-res Google search thumbnails
+                const warningContainer = document.getElementById("low-res-warning-container");
+                if (isLowRes) {
+                    warningContainer.innerHTML = `
+                        <div class="deep-glass rounded-[32px] p-6 border border-amber-500/20 bg-amber-500/5 relative overflow-hidden flex gap-4 items-start shadow-xl mb-6">
+                            <span class="material-symbols-outlined text-amber-600 bg-amber-500/10 p-2 rounded-full border border-amber-500/20 shrink-0">warning</span>
+                            <div class="space-y-1">
+                                <h4 class="font-bold text-amber-800 text-sm">Dirección de Imagen de Baja Resolución</h4>
+                                <p class="text-xs text-amber-700/80 leading-relaxed">Has guardado una <strong>miniatura de Google Search</strong> (que mide apenas 80x80 píxeles). Para solucionarlo y subirla en alta definición, haz clic derecho sobre la imagen grande original en Google y selecciona <strong>"Copiar dirección de imagen"</strong>. El sistema la ha reemplazado temporalmente con una de alta calidad.</p>
+                            </div>
+                        </div>
+                    `;
+                    warningContainer.classList.remove("hidden");
+                } else {
+                    warningContainer.classList.add("hidden");
+                }
+
                 document.getElementById("product-id-badge").textContent = `ID: ${p.sku || id.slice(0,8)}`;
                 document.getElementById("product-name").textContent = p.name || "—";
                 document.getElementById("product-category").textContent = p.category || "—";

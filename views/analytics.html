@@ -4,15 +4,15 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Taller Navarro - Reportes</title>
-    
+
     <!-- Scripts & Tailwind -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="tailwind.config.js"></script>
-    
+    <script src="../tailwind.config.js"></script>
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="../assets/css/style.css">
 
@@ -37,12 +37,12 @@
     </style>
 </head>
 <body class="font-body-md text-on-background overflow-x-hidden selection:bg-primary-container">
-    
+
     <!-- Background Decoration Blobs -->
     <div class="blob w-[500px] h-[500px] bg-primary-container/40 top-[-10%] left-[-5%]"></div>
     <div class="blob w-[600px] h-[600px] bg-secondary-container/30 top-[40%] right-[-10%]" style="animation-delay: -5s; animation-duration: 30s;"></div>
     <div class="blob w-[400px] h-[400px] bg-tertiary-container/30 bottom-[-5%] left-[20%]" style="animation-delay: -10s;"></div>
-    
+
     <!-- TopAppBar -->
     <header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-[1440px] mx-auto liquid-glass mt-4 mx-margin-desktop px-6 py-3 rounded-full">
         <div class="specular-highlight"></div>
@@ -66,9 +66,14 @@
     <!-- SideNavBar -->
     <aside class="fixed left-0 top-24 z-40 hidden md:flex flex-col p-8 liquid-glass rounded-[2.5rem] m-margin-desktop w-64 shadow-2xl h-fit">
         <div class="specular-highlight"></div>
-        <div class="mb-8 px-2 z-10">
-            <h2 class="font-headline-lg text-[20px] font-black text-primary">Consola Admin</h2>
-            <p class="text-on-surface-variant text-sm opacity-70">Red Taller Navarro</p>
+        <div class="flex items-center gap-3 mb-8 px-2 relative z-10">
+            <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary shadow-inner">
+                <span class="material-symbols-outlined">dashboard</span>
+            </div>
+            <div>
+                <p class="font-headline-lg text-lg font-black text-primary leading-tight">Consola Admin</p>
+                <p class="text-xs text-on-surface-variant opacity-70">Red Taller Navarro</p>
+            </div>
         </div>
         <nav class="space-y-3 z-10">
             <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="../index.html">
@@ -105,7 +110,7 @@
                     Visibilidad en tiempo real del rendimiento de su almacén. Seleccione un año de inventario para filtrar y exportar su reporte personalizado.
                 </p>
             </div>
-            
+
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <!-- Year Selector Chips -->
                 <div class="flex gap-2 p-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-sm h-fit">
@@ -238,7 +243,21 @@
                 </div>
                 <p class="text-xs text-on-surface-variant bg-white/30 p-3 rounded-xl border border-white/30 text-center italic font-medium z-10">Actividad máxima los jueves (90% de capacidad)</p>
             </div>
-            
+
+            <!-- Cost by Year Card (minimalist bento item, no chart circle, elegant pills list) -->
+            <div class="liquid-glass p-8 rounded-[40px] flex flex-col gap-6">
+                <div class="specular-highlight"></div>
+                <h3 class="font-headline-lg text-xl text-primary z-10">Costo Total por Año</h3>
+                <div class="space-y-3 z-10 mt-auto" id="year-costs-container">
+                    <div class="flex items-center justify-between p-3 rounded-2xl bg-white/30 border border-white/30 animate-pulse">
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-full bg-primary/20"></div>
+                            <span class="text-sm font-bold text-on-surface-variant/40">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -282,7 +301,7 @@
                 btn.classList.add("liquid-chip-active", "text-white", "shadow-lg");
                 btn.classList.remove("liquid-chip", "text-on-surface-variant");
                 activeYearFilter = btn.dataset.yearFilter;
-                
+
                 // Recalculate stats dynamically
                 updateUIStats();
             });
@@ -294,10 +313,10 @@
             if (activeYearFilter !== "all") {
                 filtered = filtered.filter(p => (Number(p.year) || 2026) === Number(activeYearFilter));
             }
-            
+
             // Calculate total units
             const totalQty = filtered.reduce((acc, p) => acc + Number(p.quantity || 0), 0);
-            
+
             // Update central stats badge dynamically
             const unitsCountElement = document.querySelector(".relative.w-52.h-52.mx-auto span.text-3xl");
             if (unitsCountElement) {
@@ -308,7 +327,7 @@
             const repuestosQty = filtered.filter(p => p.category === "general" || p.category === "enderezado").reduce((acc, p) => acc + Number(p.quantity || 0), 0);
             const herramientasQty = filtered.filter(p => p.category === "pintura").reduce((acc, p) => acc + Number(p.quantity || 0), 0);
             const grandTotal = repuestosQty + herramientasQty;
-            
+
             const repuestosPct = grandTotal > 0 ? Math.round((repuestosQty / grandTotal) * 100) : 0;
             const herramientasPct = grandTotal > 0 ? Math.round((herramientasQty / grandTotal) * 100) : 0;
 
@@ -316,6 +335,61 @@
             if (categoryLabels.length >= 2) {
                 categoryLabels[0].textContent = `${repuestosPct}%`;
                 categoryLabels[1].textContent = `${herramientasPct}%`;
+            }
+
+            // ── Costo por Año (Breakdown Card) ──────────────────────
+            const yearData = {};
+            cachedProducts.forEach(p => {
+                const year = Number(p.year) || 2026;
+                const cost = Number(p.quantity || 0) * Number(p.unitCost || 0);
+                yearData[year] = (yearData[year] || 0) + cost;
+            });
+
+            const sortedYears = Object.keys(yearData).map(Number).sort((a, b) => b - a);
+            const yearCostsContainer = document.getElementById("year-costs-container");
+            if (yearCostsContainer) {
+                if (sortedYears.length === 0) {
+                    yearCostsContainer.innerHTML = `
+                        <div class="text-center py-6 text-on-surface-variant/50 text-sm italic">
+                            No hay registros
+                        </div>
+                    `;
+                } else {
+                    const colorMap = [
+                        { dot: "bg-primary-fixed shadow-primary-fixed/30", text: "text-primary" },
+                        { dot: "bg-tertiary-fixed-dim shadow-tertiary-fixed-dim/30", text: "text-tertiary" },
+                        { dot: "bg-secondary-fixed shadow-secondary-fixed/30", text: "text-secondary" },
+                        { dot: "bg-accent-fixed shadow-accent-fixed/30", text: "text-accent" }
+                    ];
+
+                    yearCostsContainer.innerHTML = sortedYears.map((yr, idx) => {
+                        const cost = yearData[yr];
+                        const color = colorMap[idx % colorMap.length];
+                        const isFiltered = activeYearFilter !== "all" && Number(activeYearFilter) === yr;
+                        const hasFilterActive = activeYearFilter !== "all";
+
+                        let cardClass = "flex items-center justify-between p-3 rounded-2xl bg-white/30 border transition-all duration-500 backdrop-blur-md";
+                        if (hasFilterActive) {
+                            if (isFiltered) {
+                                cardClass += " border-primary/45 bg-white/60 shadow-lg scale-[1.02] font-black";
+                            } else {
+                                cardClass += " border-white/10 opacity-30 scale-95";
+                            }
+                        } else {
+                            cardClass += " border-white/30 hover:border-white/60 hover:scale-[1.01]";
+                        }
+
+                        return `
+                            <div class="${cardClass}">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-4 h-4 rounded-full ${color.dot}"></div>
+                                    <span class="text-sm font-bold">Año ${yr}</span>
+                                </div>
+                                <span class="font-data-tabular font-bold ${color.text}">$${cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            </div>
+                        `;
+                    }).join("");
+                }
             }
         }
 
@@ -365,7 +439,7 @@
                     doc.circle(24, 20, 10, "D");
                     doc.setLineWidth(0.2);
                     doc.circle(24, 20, 8.8, "D");
-                    
+
                     doc.setFontSize(6.5);
                     doc.setTextColor(32, 92, 189);
                     doc.setFont("helvetica", "bold");
@@ -435,10 +509,10 @@
                         cellPadding: 3,
                         halign: "left"
                     },
-                    bodyStyles: { 
-                        fontSize: 8, 
-                        cellPadding: 3, 
-                        textColor: [0, 0, 0] 
+                    bodyStyles: {
+                        fontSize: 8,
+                        cellPadding: 3,
+                        textColor: [0, 0, 0]
                     },
                     styles: {
                         lineColor: [180, 180, 180],

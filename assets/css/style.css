@@ -119,8 +119,14 @@ body {
 }
 
 .image-integration {
-    mix-blend-mode: multiply;
-    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.12));
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+.image-rendering-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
 
 /* Utils */
