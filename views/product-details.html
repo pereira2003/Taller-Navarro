@@ -8,7 +8,7 @@
     <script src="tailwind.config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="font-body-md text-on-surface">
     <!-- Decorative Background Elements -->
@@ -21,7 +21,7 @@
         <div class="flex items-center gap-8 relative z-10">
             <span class="font-headline-lg text-headline-md font-bold tracking-tighter text-primary">Taller Navarro</span>
             <div class="hidden md:flex items-center gap-6">
-                <a class="font-body-md text-on-surface-variant transition-all hover:bg-white/30 px-3 py-1 rounded-lg" href="index.html">Resumen</a>
+                <a class="font-body-md text-on-surface-variant transition-all hover:bg-white/30 px-3 py-1 rounded-lg" href="../index.html">Resumen</a>
                 <a class="font-body-md text-primary border-b-2 border-primary px-3 py-1" href="inventory.html">Inventario</a>
                 <a class="font-body-md text-on-surface-variant transition-all hover:bg-white/30 px-3 py-1 rounded-lg" href="analytics.html">Reportes</a>
             </div>
@@ -164,7 +164,7 @@
 
     <!-- BottomNavBar (Mobile Only) -->
     <nav class="md:hidden fixed bottom-6 left-margin-mobile right-margin-mobile flex justify-around p-4 z-50 liquid-glass rounded-full border border-white/60 shadow-2xl">
-        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 relative z-10" href="index.html">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 relative z-10" href="../index.html">
             <span class="material-symbols-outlined">home</span>
             <span class="font-label-sm">Inicio</span>
         </a>
@@ -183,7 +183,7 @@
     </nav>
 
     <script type="module">
-        import { getProduct, formatRelativeTime } from "./assets/js/firebase.js";
+        import { getProduct, formatRelativeTime } from "../assets/js/firebase.js";
 
         const params  = new URLSearchParams(location.search);
         const id      = params.get("id");

@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 
     <!-- jsPDF + AutoTable para generar PDFs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -49,7 +49,7 @@
         <div class="flex items-center gap-6 relative z-10">
             <span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Taller Navarro</span>
             <nav class="hidden md:flex gap-4">
-                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="index.html">Resumen</a>
+                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="../index.html">Resumen</a>
                 <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="inventory.html">Inventario</a>
                 <a class="font-body-md text-primary font-bold border-b-2 border-primary px-3 py-1" href="analytics.html">Reportes</a>
             </nav>
@@ -71,7 +71,7 @@
             <p class="text-on-surface-variant text-sm opacity-70">Red Taller Navarro</p>
         </div>
         <nav class="space-y-3 z-10">
-            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="index.html">
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="../index.html">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span class="font-body-md">Resumen</span>
             </a>
@@ -234,7 +234,7 @@
     <!-- BottomNavBar (Mobile Only) -->
     <nav class="md:hidden fixed bottom-6 left-margin-mobile right-margin-mobile flex justify-around p-4 z-50 liquid-glass rounded-full border border-white/60 shadow-2xl">
         <div class="specular-highlight"></div>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all relative z-10" href="index.html">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all relative z-10" href="../index.html">
             <span class="material-symbols-outlined">home</span>
             <span class="font-label-caps text-[10px] uppercase font-black">Inicio</span>
         </a>
@@ -255,7 +255,7 @@
     </nav>
     <!-- PDF Export Logic -->
     <script type="module">
-        import { onProducts } from "./assets/js/firebase.js";
+        import { onProducts } from "../assets/js/firebase.js";
 
         let cachedProducts = [];
 

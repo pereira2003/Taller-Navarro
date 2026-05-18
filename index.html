@@ -30,8 +30,8 @@
             <span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Taller Navarro</span>
             <nav class="hidden md:flex gap-4">
                 <a class="font-body-md text-primary font-bold border-b-2 border-primary px-3 py-1" href="index.html">Resumen</a>
-                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="inventory.html">Inventario</a>
-                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="analytics.html">Reportes</a>
+                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="views/inventory.html">Inventario</a>
+                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="views/analytics.html">Reportes</a>
             </nav>
         </div>
         <div class="flex items-center gap-3 relative z-10">
@@ -57,11 +57,11 @@
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
                 <span class="font-body-md">Resumen</span>
             </a>
-            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="inventory.html">
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="views/inventory.html">
                 <span class="material-symbols-outlined">inventory_2</span>
                 <span class="font-body-md">Inventario</span>
             </a>
-            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="analytics.html">
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="views/analytics.html">
                 <span class="material-symbols-outlined">analytics</span>
                 <span class="font-body-md">Reportes</span>
             </a>
@@ -70,7 +70,7 @@
                 <span class="font-body-md">Ajustes</span>
             </a>
         </nav>
-        <button onclick="window.location='add-item.html'" class="mt-8 frosted-gradient-btn text-white py-3 px-4 rounded-2xl flex items-center justify-center gap-2 font-semibold shadow-xl active:scale-95 transition-all z-10">
+        <button onclick="window.location='views/add-item.html'" class="mt-8 frosted-gradient-btn text-white py-3 px-4 rounded-2xl flex items-center justify-center gap-2 font-semibold shadow-xl active:scale-95 transition-all z-10">
             <span class="material-symbols-outlined">add</span>
             Nuevo Item
         </button>
@@ -89,7 +89,7 @@
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='inventory.html'">
+            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='views/inventory.html'">
                 <div class="p-4 bg-primary-container rounded-2xl text-primary">
                     <span class="material-symbols-outlined text-3xl">warehouse</span>
                 </div>
@@ -98,7 +98,7 @@
                     <p class="font-data-tabular text-3xl font-black text-primary" id="stat-total">—</p>
                 </div>
             </div>
-            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='inventory.html'">
+            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='views/inventory.html'">
                 <div class="p-4 bg-tertiary-container rounded-2xl text-tertiary">
                     <span class="material-symbols-outlined text-3xl">local_shipping</span>
                 </div>
@@ -107,7 +107,7 @@
                     <p class="font-data-tabular text-3xl font-black text-tertiary" id="stat-transit">—</p>
                 </div>
             </div>
-            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='analytics.html'">
+            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='views/analytics.html'">
                 <div class="p-4 bg-error-container rounded-2xl text-error">
                     <span class="material-symbols-outlined text-3xl">warning</span>
                 </div>
@@ -130,21 +130,21 @@
                         <h2 class="font-headline-lg text-2xl text-primary">Acciones Rápidas</h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-                        <button onclick="window.location='add-item.html'" class="frosted-gradient-btn text-white py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-xl active:scale-95 transition-transform text-left">
+                        <button onclick="window.location='views/add-item.html'" class="frosted-gradient-btn text-white py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-xl active:scale-95 transition-transform text-left">
                             <span class="material-symbols-outlined text-2xl">add_box</span>
                             <div>
                                 <p class="font-bold">Agregar Nuevo Item</p>
                                 <p class="text-xs opacity-80">Registrar stock en inventario</p>
                             </div>
                         </button>
-                        <button onclick="window.location='inventory.html'" class="liquid-glass !bg-white/40 border border-white/60 text-primary py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-md active:scale-95 transition-transform text-left hover:bg-white/60">
+                        <button onclick="window.location='views/inventory.html'" class="liquid-glass !bg-white/40 border border-white/60 text-primary py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-md active:scale-95 transition-transform text-left hover:bg-white/60">
                             <span class="material-symbols-outlined text-2xl">inventory_2</span>
                             <div>
                                 <p class="font-bold">Ver Inventario</p>
                                 <p class="text-xs text-on-surface-variant opacity-80">Explorar todos los items</p>
                             </div>
                         </button>
-                        <button onclick="window.location='analytics.html'" class="liquid-glass !bg-white/40 border border-white/60 text-primary py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-md active:scale-95 transition-transform text-left hover:bg-white/60">
+                        <button onclick="window.location='views/analytics.html'" class="liquid-glass !bg-white/40 border border-white/60 text-primary py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-md active:scale-95 transition-transform text-left hover:bg-white/60">
                             <span class="material-symbols-outlined text-2xl">analytics</span>
                             <div>
                                 <p class="font-bold">Reportes y Estadísticas</p>
@@ -209,11 +209,11 @@
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
             <span class="font-label-caps text-[10px] mt-1 font-bold">Inicio</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="inventory.html">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="views/inventory.html">
             <span class="material-symbols-outlined">list</span>
             <span class="font-label-caps text-[10px] mt-1">Inventario</span>
         </a>
-        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="analytics.html">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="views/analytics.html">
             <span class="material-symbols-outlined">insights</span>
             <span class="font-label-caps text-[10px] mt-1">Reportes</span>
         </a>
