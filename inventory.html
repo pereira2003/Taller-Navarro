@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Taller Navarro - Inventario</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind.config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+    
+    <!-- Background Decorative Blobs -->
+    <div class="blob w-[600px] h-[600px] bg-primary-fixed top-[-15%] left-[-10%]"></div>
+    <div class="blob w-[500px] h-[500px] bg-tertiary-fixed bottom-[-15%] right-[5%]" style="animation-duration: 30s; animation-delay: -5s;"></div>
+    <div class="blob w-[400px] h-[400px] bg-secondary-fixed top-[20%] right-[15%]" style="animation-duration: 20s; animation-delay: -10s;"></div>
+    
+    <!-- Top Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-[1440px] mx-auto mt-4 mx-margin-desktop px-6 py-3 border border-white/70 rounded-full shadow-2xl shadow-primary/5 backdrop-blur-[100px] bg-white/30 specular-highlight">
+        <div class="flex items-center gap-8 z-10">
+            <span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Taller Navarro</span>
+            <nav class="hidden md:flex gap-6">
+                <a class="font-label-caps text-label-caps text-on-surface-variant/80 hover:text-primary transition-all" href="index.html">Resumen</a>
+                <a class="font-label-caps text-label-caps text-primary border-b-2 border-primary transition-all" href="inventory.html">Inventario</a>
+                <a class="font-label-caps text-label-caps text-on-surface-variant/80 hover:text-primary transition-all" href="analytics.html">Reportes</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4 z-10">
+            <button class="p-2 rounded-full hover:bg-white/50 transition-all active:scale-90 liquid-chip">
+                <span class="material-symbols-outlined text-primary">notifications</span>
+            </button>
+            <button class="p-2 rounded-full hover:bg-white/50 transition-all active:scale-90 liquid-chip">
+                <span class="material-symbols-outlined text-primary">account_circle</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Side Navigation (Desktop Only) -->
+    <aside class="fixed left-0 top-24 z-40 hidden md:flex flex-col p-8 liquid-glass rounded-[2.5rem] m-margin-desktop w-64 shadow-2xl specular-highlight h-fit">
+        <div class="mb-8 px-2 z-10">
+            <h2 class="font-headline-lg text-[20px] font-black text-primary">Consola Admin</h2>
+            <p class="text-on-surface-variant text-sm opacity-70">Red Taller Navarro</p>
+        </div>
+        <nav class="space-y-3 z-10">
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="index.html">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-body-md">Resumen</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 liquid-glass !bg-primary/10 text-primary font-bold rounded-2xl transition-transform translate-x-1 border-white/50 shadow-none" href="inventory.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                <span class="font-body-md">Inventario</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="analytics.html">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="font-body-md">Reportes</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="settings.html">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-body-md">Ajustes</span>
+            </a>
+        </nav>
+        <button onclick="window.location='add-item.html'" class="mt-8 frosted-gradient-btn text-white py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 font-semibold shadow-xl active:scale-95 transition-transform z-10">
+            <span class="material-symbols-outlined">add</span>
+            Nuevo Item
+        </button>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="md:ml-[340px] pt-32 pb-24 px-margin-mobile md:px-margin-desktop max-w-[1440px]">
+        <!-- Header & Filter Section -->
+        <div class="mb-10 space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 class="font-display-lg text-display-lg text-primary drop-shadow-sm">Inventario Global</h1>
+                    <p class="text-on-surface-variant mt-2 max-w-xl opacity-80">Gestione el inventario de su almacén con seguimiento en tiempo real de Firebase.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative group">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+                        <input id="search-input" class="bg-white/30 border-white/60 border rounded-full py-3 pl-12 pr-6 w-full md:w-72 focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all text-body-md backdrop-blur-3xl placeholder-on-surface-variant/50" placeholder="Buscar en inventario..." type="text">
+                    </div>
+                    <button class="liquid-chip p-3 rounded-full hover:bg-white/50 transition-all">
+                        <span class="material-symbols-outlined text-primary">tune</span>
+                    </button>
+                    <!-- Add Item button (mobile) -->
+                    <button onclick="window.location='add-item.html'" class="md:hidden frosted-gradient-btn text-white p-3 rounded-full shadow-xl active:scale-95 transition-transform">
+                        <span class="material-symbols-outlined">add</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter Chips -->
+            <div class="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+                <button data-filter="all" class="liquid-chip-active text-white px-6 py-2 rounded-full font-label-caps text-label-caps shadow-lg">Todos</button>
+                <button data-filter="LOW_STOCK" class="liquid-chip text-on-surface-variant px-6 py-2 rounded-full font-label-caps text-label-caps hover:bg-white/50 transition-all specular-highlight">Bajo Stock</button>
+                <button data-filter="IN_STOCK" class="liquid-chip text-on-surface-variant px-6 py-2 rounded-full font-label-caps text-label-caps hover:bg-white/50 transition-all specular-highlight">En Existencia</button>
+                <button data-filter="OUT_OF_STOCK" class="liquid-chip text-on-surface-variant px-6 py-2 rounded-full font-label-caps text-label-caps hover:bg-white/50 transition-all specular-highlight">Sin Stock</button>
+            </div>
+        </div>
+
+        <!-- Inventory Grid — populated by JS -->
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Loading skeleton -->
+            <div class="liquid-glass rounded-[2.5rem] p-5 animate-pulse">
+                <div class="h-56 w-full rounded-[1.75rem] bg-white/30 mb-5"></div>
+                <div class="space-y-3 px-2">
+                    <div class="h-5 bg-white/30 rounded-full w-3/4"></div>
+                    <div class="h-3 bg-white/20 rounded-full w-full"></div>
+                    <div class="h-3 bg-white/20 rounded-full w-2/3"></div>
+                </div>
+            </div>
+            <div class="liquid-glass rounded-[2.5rem] p-5 animate-pulse hidden sm:block">
+                <div class="h-56 w-full rounded-[1.75rem] bg-white/30 mb-5"></div>
+                <div class="space-y-3 px-2">
+                    <div class="h-5 bg-white/30 rounded-full w-3/4"></div>
+                    <div class="h-3 bg-white/20 rounded-full w-full"></div>
+                    <div class="h-3 bg-white/20 rounded-full w-2/3"></div>
+                </div>
+            </div>
+            <div class="liquid-glass rounded-[2.5rem] p-5 animate-pulse hidden lg:block">
+                <div class="h-56 w-full rounded-[1.75rem] bg-white/30 mb-5"></div>
+                <div class="space-y-3 px-2">
+                    <div class="h-5 bg-white/30 rounded-full w-3/4"></div>
+                    <div class="h-3 bg-white/20 rounded-full w-full"></div>
+                    <div class="h-3 bg-white/20 rounded-full w-2/3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="hidden text-center py-24">
+            <span class="material-symbols-outlined text-primary/30 text-8xl block mb-4">inventory_2</span>
+            <h3 class="font-headline-lg text-2xl text-on-surface-variant mb-2">No se encontraron productos</h3>
+            <p class="text-on-surface-variant/70 mb-8">Agregue su primer item para comenzar.</p>
+            <button onclick="window.location='add-item.html'" class="frosted-gradient-btn text-white py-3 px-8 rounded-2xl font-semibold shadow-xl active:scale-95 transition-transform inline-flex items-center gap-2">
+                <span class="material-symbols-outlined">add</span>
+                Agregar Primer Item
+            </button>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <nav class="md:hidden fixed bottom-6 left-margin-mobile right-margin-mobile flex justify-around p-4 z-50 liquid-glass rounded-full border border-white/60 shadow-2xl">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="index.html">
+            <span class="material-symbols-outlined">home</span>
+            <span class="font-label-caps text-[10px] mt-1">Inicio</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-primary scale-110 z-10 relative" href="inventory.html">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">list</span>
+            <span class="font-label-caps text-[10px] mt-1 font-bold">Items</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="analytics.html">
+            <span class="material-symbols-outlined">insights</span>
+            <span class="font-label-caps text-[10px] mt-1">Reportes</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="settings.html">
+            <span class="material-symbols-outlined">person</span>
+            <span class="font-label-caps text-[10px] mt-1">Ajustes</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { onProducts, deleteProduct, logActivity } from "./firebase.js";
+
+        const grid = document.getElementById("products-grid");
+        const emptyState = document.getElementById("empty-state");
+        const searchInput = document.getElementById("search-input");
+        const filterBtns = document.querySelectorAll("[data-filter]");
+
+        let allProducts = [];
+        let activeFilter = "all";
+        let searchQuery = "";
+
+        // ── Status badge config ─────────────────────────────────
+        function statusBadge(status) {
+            const map = {
+                IN_STOCK:     { label: "EN EXISTENCIA", cls: "bg-secondary-container/80 text-on-secondary-container" },
+                LOW_STOCK:    { label: "BAJO STOCK",     cls: "bg-error-container/80 text-on-error-container" },
+                OUT_OF_STOCK: { label: "SIN STOCK",     cls: "bg-error/20 text-error" }
+            };
+            const s = map[status] || map.IN_STOCK;
+            return `<div class="absolute top-3 right-3 px-4 py-1.5 rounded-full ${s.cls} backdrop-blur-xl border border-white/50 font-label-caps text-[10px] shadow-sm">${s.label}</div>`;
+        }
+
+        // ── Render products ──────────────────────────────────────
+        function renderProducts() {
+            let filtered = allProducts;
+            if (activeFilter !== "all") filtered = filtered.filter(p => p.status === activeFilter);
+            if (searchQuery) filtered = filtered.filter(p =>
+                p.name.toLowerCase().includes(searchQuery) ||
+                p.sku?.toLowerCase().includes(searchQuery) ||
+                p.category?.toLowerCase().includes(searchQuery)
+            );
+
+            if (filtered.length === 0) {
+                grid.classList.add("hidden");
+                emptyState.classList.remove("hidden");
+                return;
+            }
+            grid.classList.remove("hidden");
+            emptyState.classList.add("hidden");
+
+            grid.innerHTML = filtered.map(p => {
+                const qty = Number(p.quantity || 0);
+                const qtyColor = p.status === "LOW_STOCK" ? "text-error" :
+                                 p.status === "OUT_OF_STOCK" ? "text-error" : "text-primary";
+                const fallbackImg = `https://placehold.co/400x300/e1e1f5/5c5d6e?text=${encodeURIComponent(p.name)}`;
+                const img = p.imageUrl || fallbackImg;
+                return `
+                <div class="liquid-glass rounded-[2.5rem] p-5 group hover:scale-[1.02] transition-all duration-500 hover:shadow-3xl specular-highlight cursor-pointer"
+                     onclick="window.location='product-details.html?id=${p.id}'">
+                    <div class="relative h-56 w-full rounded-[1.75rem] overflow-hidden mb-5 bg-black/5 z-10">
+                        <img alt="${p.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                             src="${img}" onerror="this.src='${fallbackImg}'">
+                        ${statusBadge(p.status)}
+                    </div>
+                    <div class="px-2 space-y-1 z-10 relative">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-headline-lg text-[19px] text-primary truncate font-bold">${p.name}</h3>
+                            <span class="font-data-tabular text-on-surface-variant/60 text-xs">#${p.sku || '—'}</span>
+                        </div>
+                        <p class="text-on-surface-variant text-sm leading-relaxed opacity-80 mb-4">${p.category || ''}</p>
+                        <div class="pt-4 border-t border-white/30 flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] font-label-caps text-on-surface-variant/60 uppercase tracking-widest">Existencia</p>
+                                <p class="font-data-tabular text-2xl font-black ${qtyColor}">${qty.toLocaleString()} <span class="text-xs font-medium opacity-50">unidades</span></p>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="event.stopPropagation(); window.location='add-item.html?id=${p.id}'"
+                                        class="liquid-chip p-2.5 rounded-full hover:bg-white/50 transition-colors" title="Editar">
+                                    <span class="material-symbols-outlined text-primary text-xl">edit</span>
+                                </button>
+                                <button onclick="event.stopPropagation(); handleDelete('${p.id}', '${p.name}')"
+                                        class="liquid-chip p-2.5 rounded-full hover:bg-error/10 transition-colors" title="Eliminar">
+                                    <span class="material-symbols-outlined text-error text-xl">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        // ── Delete handler ───────────────────────────────────────
+        window.handleDelete = async (id, name) => {
+            if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
+            try {
+                await deleteProduct(id);
+                await logActivity("delete", `Se eliminó ${name} del inventario.`);
+            } catch(e) {
+                alert("Error al eliminar: " + e.message);
+            }
+        };
+
+        // ── Filter chips ─────────────────────────────────────────
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove("liquid-chip-active", "text-white", "shadow-lg");
+                    b.classList.add("liquid-chip", "text-on-surface-variant");
+                });
+                btn.classList.add("liquid-chip-active", "text-white", "shadow-lg");
+                btn.classList.remove("liquid-chip", "text-on-surface-variant");
+                activeFilter = btn.dataset.filter;
+                renderProducts();
+            });
+        });
+
+        // ── Search ────────────────────────────────────────────────
+        searchInput.addEventListener("input", e => {
+            searchQuery = e.target.value.toLowerCase().trim();
+            renderProducts();
+        });
+
+        // ── Firebase listener ────────────────────────────────────
+        onProducts(products => {
+            allProducts = products;
+            renderProducts();
+        });
+    </script>
+</body>
+</html>

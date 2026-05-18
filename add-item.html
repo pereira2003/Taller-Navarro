@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Taller Navarro - Agregar / Editar Item</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind.config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-input {
+            width: 100%;
+            background: rgba(255,255,255,0.4);
+            border: 1.5px solid rgba(255,255,255,0.7);
+            border-radius: 1rem;
+            padding: 0.875rem 1.25rem;
+            font-size: 0.9rem;
+            color: #191c1e;
+            outline: none;
+            transition: all 0.2s;
+            backdrop-filter: blur(20px);
+        }
+        .form-input:focus {
+            background: rgba(255,255,255,0.6);
+            border-color: rgba(92,93,110,0.5);
+            box-shadow: 0 0 0 4px rgba(92,93,110,0.08);
+        }
+        .form-input::placeholder { color: rgba(73,77,84,0.4); }
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(73,77,84,0.7);
+            margin-bottom: 0.5rem;
+        }
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(120%);
+            background: linear-gradient(135deg, #5c5d6e 0%, #526069 100%);
+            color: white; padding: 1rem 1.5rem; border-radius: 1rem;
+            font-weight: 600; font-size: 0.9rem; z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+
+    <!-- Background Blobs -->
+    <div class="blob w-[500px] h-[500px] bg-primary-container/40 top-[-10%] left-[-5%]"></div>
+    <div class="blob w-[600px] h-[600px] bg-secondary-container/30 top-[40%] right-[-10%]" style="animation-delay: -5s; animation-duration: 30s;"></div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+        <span class="material-symbols-outlined" id="toast-icon">check_circle</span>
+        <span id="toast-msg">¡Guardado correctamente!</span>
+    </div>
+
+    <!-- TopAppBar -->
+    <header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-[1440px] mx-auto liquid-glass mt-4 mx-margin-desktop px-6 py-3 rounded-full">
+        <div class="specular-highlight"></div>
+        <div class="flex items-center gap-4 relative z-10">
+            <button onclick="history.back()" class="p-2 rounded-full hover:bg-white/40 transition-all liquid-chip active:scale-90">
+                <span class="material-symbols-outlined text-primary">arrow_back</span>
+            </button>
+            <span id="page-title" class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Agregar Nuevo Item</span>
+        </div>
+        <div class="flex items-center gap-3 relative z-10">
+            <a href="inventory.html" class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all px-3 py-1 rounded-full">Cancelar</a>
+        </div>
+    </header>
+
+    <main class="pt-28 pb-32 px-margin-mobile md:px-margin-desktop max-w-[900px] mx-auto">
+
+        <!-- Form Card -->
+        <section class="liquid-glass rounded-[40px] p-8 md:p-12 border border-white/60 shadow-xl relative overflow-hidden">
+            <div class="specular-highlight"></div>
+
+            <!-- Header -->
+            <div class="flex items-center gap-4 mb-10 relative z-10">
+                <div id="preview-img-wrap" class="w-20 h-20 rounded-2xl bg-white/30 border border-white/60 flex items-center justify-center overflow-hidden shadow-inner">
+                    <span id="preview-icon" class="material-symbols-outlined text-primary/40 text-4xl">inventory_2</span>
+                    <img id="preview-img" class="w-full h-full object-cover hidden" alt="Preview">
+                </div>
+                <div>
+                    <h2 id="form-heading" class="font-headline-lg text-2xl text-primary font-bold">Detalles del Producto</h2>
+                    <p class="text-on-surface-variant text-sm opacity-70">Complete la información a continuación para registrar un producto.</p>
+                </div>
+            </div>
+
+            <form id="item-form" class="relative z-10 space-y-8">
+
+                <!-- Row 1: Name + SKU -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="form-label" for="name">Nombre del Producto *</label>
+                        <input id="name" class="form-input" type="text" placeholder="Ej. Filtro de Aceite" required>
+                    </div>
+                    <div>
+                        <label class="form-label" for="sku">Código SKU *</label>
+                        <input id="sku" class="form-input font-data-tabular" type="text" placeholder="Ej. SKU-0001" required>
+                    </div>
+                </div>
+
+                <!-- Row 2: Category + Supplier -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="form-label" for="category">Categoría</label>
+                        <input id="category" class="form-input" type="text" placeholder="Ej. Repuestos, Herramientas">
+                    </div>
+                    <div>
+                        <label class="form-label" for="supplier">Proveedor</label>
+                        <input id="supplier" class="form-input" type="text" placeholder="Ej. NEXUS Distribuidora">
+                    </div>
+                </div>
+
+                <!-- Row 3: Quantity + Threshold + Unit Cost -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="form-label" for="quantity">Cantidad *</label>
+                        <input id="quantity" class="form-input font-data-tabular" type="number" min="0" placeholder="0" required>
+                    </div>
+                    <div>
+                        <label class="form-label" for="reorderThreshold">Límite de Reorden</label>
+                        <input id="reorderThreshold" class="form-input font-data-tabular" type="number" min="0" placeholder="50">
+                    </div>
+                    <div>
+                        <label class="form-label" for="unitCost">Costo Unitario (USD)</label>
+                        <input id="unitCost" class="form-input font-data-tabular" type="number" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+
+                <!-- Row 4: Warehouse Location -->
+                <div>
+                    <label class="form-label" for="warehouseLocation">Ubicación en Almacén</label>
+                    <input id="warehouseLocation" class="form-input" type="text" placeholder="Ej. Pasillo 3, Estante A1">
+                </div>
+
+                <!-- Row 5: Image URL -->
+                <div>
+                    <label class="form-label" for="imageUrl">URL de la Imagen del Producto</label>
+                    <input id="imageUrl" class="form-input" type="url" placeholder="https://...">
+                    <p class="text-xs text-on-surface-variant/60 mt-2 ml-1">Pegue una URL directa de imagen. Deje vacío para usar un marcador de posición.</p>
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-white/40 pt-4">
+                    <!-- Stock status preview -->
+                    <div id="status-preview" class="hidden flex items-center gap-3 p-4 bg-white/30 rounded-2xl border border-white/40">
+                        <span class="material-symbols-outlined" id="status-icon">check_circle</span>
+                        <div>
+                            <p class="text-sm font-bold" id="status-label">Estado</p>
+                            <p class="text-xs text-on-surface-variant" id="status-desc">Calculado a partir de la cantidad frente al límite.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <button type="submit" id="submit-btn"
+                            class="flex-1 frosted-gradient-btn text-white py-4 px-8 rounded-2xl font-bold text-lg shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3">
+                        <span class="material-symbols-outlined" id="submit-icon">save</span>
+                        <span id="submit-text">Guardar Item</span>
+                    </button>
+                    <button type="button" onclick="history.back()"
+                            class="liquid-chip py-4 px-8 rounded-2xl font-semibold text-on-surface-variant hover:bg-white/50 transition-all border border-white/60">
+                        Cancelar
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+    </main>
+
+    <script type="module">
+        import { addProduct, updateProduct, getProduct, logActivity } from "./firebase.js";
+
+        // ── Parse query param ────────────────────────────────────
+        const params = new URLSearchParams(location.search);
+        const editId = params.get("id");
+        const isEdit = !!editId;
+
+        if (isEdit) {
+            document.getElementById("page-title").textContent = "Editar Item";
+            document.getElementById("form-heading").textContent = "Editar Producto";
+            document.getElementById("submit-icon").textContent = "edit";
+            document.getElementById("submit-text").textContent = "Actualizar Item";
+        }
+
+        // ── Load existing data for edit mode ─────────────────────
+        if (isEdit) {
+            getProduct(editId).then(product => {
+                if (!product) {
+                    showToast("Producto no encontrado.", "error_outline");
+                    setTimeout(() => history.back(), 1500);
+                    return;
+                }
+                document.getElementById("name").value             = product.name || "";
+                document.getElementById("sku").value              = product.sku || "";
+                document.getElementById("category").value         = product.category || "";
+                document.getElementById("supplier").value         = product.supplier || "";
+                document.getElementById("quantity").value         = product.quantity ?? "";
+                document.getElementById("reorderThreshold").value = product.reorderThreshold ?? "";
+                document.getElementById("unitCost").value         = product.unitCost ?? "";
+                document.getElementById("warehouseLocation").value= product.warehouseLocation || "";
+                document.getElementById("imageUrl").value         = product.imageUrl || "";
+                updatePreview();
+                updateStatusPreview();
+            });
+        }
+
+        // ── Image preview ────────────────────────────────────────
+        function updatePreview() {
+            const url = document.getElementById("imageUrl").value.trim();
+            const img = document.getElementById("preview-img");
+            const icon = document.getElementById("preview-icon");
+            if (url) {
+                img.src = url;
+                img.classList.remove("hidden");
+                icon.classList.add("hidden");
+            } else {
+                img.classList.add("hidden");
+                icon.classList.remove("hidden");
+            }
+        }
+        document.getElementById("imageUrl").addEventListener("input", updatePreview);
+
+        // ── Status preview ────────────────────────────────────────
+        function updateStatusPreview() {
+            const qty = Number(document.getElementById("quantity").value);
+            const thr = Number(document.getElementById("reorderThreshold").value) || 0;
+            const preview = document.getElementById("status-preview");
+            const label = document.getElementById("status-label");
+            const icon = document.getElementById("status-icon");
+            const desc = document.getElementById("status-desc");
+            if (!document.getElementById("quantity").value) { preview.classList.add("hidden"); return; }
+            preview.classList.remove("hidden");
+            if (qty <= 0) {
+                label.textContent = "SIN STOCK"; icon.textContent = "error"; label.className = "text-sm font-bold text-error"; desc.textContent = "Sin unidades disponibles.";
+            } else if (qty <= thr) {
+                label.textContent = "STOCK BAJO"; icon.textContent = "warning"; label.className = "text-sm font-bold text-error"; desc.textContent = `${qty} unidades — por debajo del límite de ${thr}.`;
+            } else {
+                label.textContent = "EN EXISTENCIA"; icon.textContent = "check_circle"; label.className = "text-sm font-bold text-primary"; desc.textContent = `${qty} unidades disponibles.`;
+            }
+        }
+        document.getElementById("quantity").addEventListener("input", updateStatusPreview);
+        document.getElementById("reorderThreshold").addEventListener("input", updateStatusPreview);
+
+        // ── Toast ─────────────────────────────────────────────────
+        function showToast(msg, icon = "check_circle") {
+            const t = document.getElementById("toast");
+            document.getElementById("toast-msg").textContent = msg;
+            document.getElementById("toast-icon").textContent = icon;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 3000);
+        }
+
+        // ── Form submit ───────────────────────────────────────────
+        document.getElementById("item-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("submit-btn");
+            const btnText = document.getElementById("submit-text");
+            const btnIcon = document.getElementById("submit-icon");
+
+            btn.disabled = true;
+            btnText.textContent = "Guardando...";
+            btnIcon.textContent = "sync";
+            btnIcon.classList.add("animate-spin");
+
+            const data = {
+                name:              document.getElementById("name").value.trim(),
+                sku:               document.getElementById("sku").value.trim(),
+                category:          document.getElementById("category").value.trim(),
+                supplier:          document.getElementById("supplier").value.trim(),
+                quantity:          Number(document.getElementById("quantity").value) || 0,
+                reorderThreshold:  Number(document.getElementById("reorderThreshold").value) || 0,
+                unitCost:          parseFloat(document.getElementById("unitCost").value) || 0,
+                warehouseLocation: document.getElementById("warehouseLocation").value.trim(),
+                imageUrl:          document.getElementById("imageUrl").value.trim()
+            };
+
+            try {
+                if (isEdit) {
+                    await updateProduct(editId, data);
+                    await logActivity("edit", `${data.name} actualizado en el inventario.`);
+                    showToast("¡Producto actualizado correctamente!");
+                } else {
+                    await addProduct(data);
+                    await logActivity("add", `${data.quantity} unidades de ${data.name} agregadas al inventario.`);
+                    showToast("¡Producto agregado correctamente!");
+                    document.getElementById("item-form").reset();
+                    document.getElementById("preview-img").classList.add("hidden");
+                    document.getElementById("preview-icon").classList.remove("hidden");
+                    document.getElementById("status-preview").classList.add("hidden");
+                }
+                setTimeout(() => window.location.href = "inventory.html", 1500);
+            } catch (err) {
+                console.error(err);
+                showToast("Error: " + err.message, "error_outline");
+                btn.disabled = false;
+                btnText.textContent = isEdit ? "Actualizar Item" : "Guardar Item";
+                btnIcon.textContent = "save";
+                btnIcon.classList.remove("animate-spin");
+            }
+        });
+    </script>
+</body>
+</html>

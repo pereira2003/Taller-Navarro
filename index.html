@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Taller Navarro - Panel de Control</title>
+    
+    <!-- Scripts & Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind.config.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-body-md text-on-surface">
+
+    <!-- Decorative Background Blobs -->
+    <div class="blob w-[500px] h-[500px] bg-primary-container/40 top-[-10%] left-[-5%]"></div>
+    <div class="blob w-[600px] h-[600px] bg-secondary-container/30 top-[40%] right-[-10%]" style="animation-delay: -5s; animation-duration: 30s;"></div>
+    <div class="blob w-[400px] h-[400px] bg-tertiary-container/30 bottom-[-5%] left-[20%]" style="animation-delay: -10s;"></div>
+    
+    <!-- TopAppBar -->
+    <header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-[1440px] mx-auto liquid-glass mt-4 mx-margin-desktop px-6 py-3 rounded-full">
+        <div class="specular-highlight"></div>
+        <div class="flex items-center gap-6 relative z-10">
+            <span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Taller Navarro</span>
+            <nav class="hidden md:flex gap-4">
+                <a class="font-body-md text-primary font-bold border-b-2 border-primary px-3 py-1" href="index.html">Resumen</a>
+                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="inventory.html">Inventario</a>
+                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="analytics.html">Reportes</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-3 relative z-10">
+            <button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-white/40 rounded-full transition-all">notifications</button>
+            <button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-white/40 rounded-full transition-all">account_circle</button>
+        </div>
+    </header>
+
+    <!-- SideNavBar (Desktop Only) -->
+    <aside class="fixed left-0 top-24 z-40 hidden md:flex flex-col p-8 liquid-glass rounded-[2.5rem] m-margin-desktop w-64 shadow-2xl specular-highlight h-fit">
+        <div class="specular-highlight"></div>
+        <div class="flex items-center gap-3 mb-8 px-2 relative z-10">
+            <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary shadow-inner">
+                <span class="material-symbols-outlined">dashboard</span>
+            </div>
+            <div>
+                <p class="font-headline-lg text-lg font-black text-primary leading-tight">Consola Admin</p>
+                <p class="text-xs text-on-surface-variant opacity-70">Red Taller Navarro</p>
+            </div>
+        </div>
+        <nav class="space-y-2 z-10">
+            <a class="flex items-center gap-3 p-3 bg-primary/10 text-primary font-bold rounded-2xl transition-transform" href="index.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                <span class="font-body-md">Resumen</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="inventory.html">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span class="font-body-md">Inventario</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="analytics.html">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="font-body-md">Reportes</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="settings.html">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-body-md">Ajustes</span>
+            </a>
+        </nav>
+        <button onclick="window.location='add-item.html'" class="mt-8 frosted-gradient-btn text-white py-3 px-4 rounded-2xl flex items-center justify-center gap-2 font-semibold shadow-xl active:scale-95 transition-all z-10">
+            <span class="material-symbols-outlined">add</span>
+            Nuevo Item
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-24 px-margin-mobile md:ml-[340px] md:mr-margin-desktop md:pt-24">
+
+        <!-- Page Header -->
+        <section class="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
+            <div>
+                <h1 class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary via-tertiary to-primary leading-none mb-2 filter drop-shadow-sm">Taller Navarro</h1>
+                <p class="font-body-md text-on-surface-variant max-w-xl">Panel de control centralizado para gestión de inventario en tiempo real.</p>
+            </div>
+        </section>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='inventory.html'">
+                <div class="p-4 bg-primary-container rounded-2xl text-primary">
+                    <span class="material-symbols-outlined text-3xl">warehouse</span>
+                </div>
+                <div>
+                    <p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Total Items</p>
+                    <p class="font-data-tabular text-3xl font-black text-primary" id="stat-total">—</p>
+                </div>
+            </div>
+            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='inventory.html'">
+                <div class="p-4 bg-tertiary-container rounded-2xl text-tertiary">
+                    <span class="material-symbols-outlined text-3xl">local_shipping</span>
+                </div>
+                <div>
+                    <p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">En Existencia</p>
+                    <p class="font-data-tabular text-3xl font-black text-tertiary" id="stat-transit">—</p>
+                </div>
+            </div>
+            <div class="liquid-glass p-6 rounded-[32px] flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer" onclick="window.location='analytics.html'">
+                <div class="p-4 bg-error-container rounded-2xl text-error">
+                    <span class="material-symbols-outlined text-3xl">warning</span>
+                </div>
+                <div>
+                    <p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Alertas</p>
+                    <p class="font-data-tabular text-3xl font-black text-error" id="stat-alerts">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid: Quick Actions + Recent Activity -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+            <!-- Quick Actions -->
+            <div class="xl:col-span-2 space-y-6">
+                <section class="liquid-glass rounded-[40px] p-8 border border-white/60 shadow-xl relative overflow-hidden">
+                    <div class="specular-highlight"></div>
+                    <div class="flex items-center gap-3 mb-6 relative z-10">
+                        <span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+                        <h2 class="font-headline-lg text-2xl text-primary">Acciones Rápidas</h2>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+                        <button onclick="window.location='add-item.html'" class="frosted-gradient-btn text-white py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-xl active:scale-95 transition-transform text-left">
+                            <span class="material-symbols-outlined text-2xl">add_box</span>
+                            <div>
+                                <p class="font-bold">Agregar Nuevo Item</p>
+                                <p class="text-xs opacity-80">Registrar stock en inventario</p>
+                            </div>
+                        </button>
+                        <button onclick="window.location='inventory.html'" class="liquid-glass !bg-white/40 border border-white/60 text-primary py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-md active:scale-95 transition-transform text-left hover:bg-white/60">
+                            <span class="material-symbols-outlined text-2xl">inventory_2</span>
+                            <div>
+                                <p class="font-bold">Ver Inventario</p>
+                                <p class="text-xs text-on-surface-variant opacity-80">Explorar todos los items</p>
+                            </div>
+                        </button>
+                        <button onclick="window.location='analytics.html'" class="liquid-glass !bg-white/40 border border-white/60 text-primary py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-md active:scale-95 transition-transform text-left hover:bg-white/60">
+                            <span class="material-symbols-outlined text-2xl">analytics</span>
+                            <div>
+                                <p class="font-bold">Reportes y Estadísticas</p>
+                                <p class="text-xs text-on-surface-variant opacity-80">Ver tendencias y descargas</p>
+                            </div>
+                        </button>
+                        <button onclick="window.location='settings.html'" class="liquid-glass !bg-white/40 border border-white/60 text-primary py-4 px-6 rounded-2xl flex items-center gap-3 font-semibold shadow-md active:scale-95 transition-transform text-left hover:bg-white/60">
+                            <span class="material-symbols-outlined text-2xl">settings</span>
+                            <div>
+                                <p class="font-bold">Ajustes</p>
+                                <p class="text-xs text-on-surface-variant opacity-80">Configurar el sistema</p>
+                            </div>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Inventory Health Bento -->
+                <section class="liquid-glass !bg-primary/5 rounded-[40px] p-8 border border-white/60 shadow-xl relative overflow-hidden">
+                    <div class="specular-highlight"></div>
+                    <div class="flex items-center gap-3 mb-4 relative z-10">
+                        <span class="material-symbols-outlined text-primary text-4xl">analytics</span>
+                        <h3 class="font-headline-lg text-2xl text-primary font-bold">Salud del Inventario</h3>
+                    </div>
+                    <p class="text-on-surface-variant max-w-md mb-8 opacity-80 leading-relaxed relative z-10">Sus niveles de stock están optimizados para el trimestre actual. No se detectan anomalías en el Almacén.</p>
+                    <div class="grid grid-cols-2 gap-6 relative z-10">
+                        <div class="liquid-glass border-white/50 p-6 rounded-[2rem] bg-white/30">
+                            <p class="font-label-caps text-[11px] text-on-surface-variant/70 mb-2 tracking-widest">TASA DE ROTACIÓN</p>
+                            <p class="font-data-tabular text-3xl font-black text-primary">14.2%</p>
+                        </div>
+                        <div class="liquid-glass border-white/50 p-6 rounded-[2rem] bg-white/30">
+                            <p class="font-label-caps text-[11px] text-on-surface-variant/70 mb-2 tracking-widest">NUEVOS INGRESOS</p>
+                            <p class="font-data-tabular text-3xl font-black text-primary">+84</p>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 blur-[90px] rounded-full z-0"></div>
+                </section>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="xl:col-span-1">
+                <section class="liquid-glass rounded-[40px] p-8 h-full border border-white/60 shadow-xl relative overflow-hidden">
+                    <div class="specular-highlight"></div>
+                    <h3 class="font-headline-lg text-xl text-primary mb-6 relative z-10 flex items-center gap-2">
+                        <span class="material-symbols-outlined">history</span> Actividad Reciente
+                    </h3>
+                    <!-- Activity items rendered dynamically by app.js -->
+                    <div id="activity-feed" class="space-y-6 relative z-10">
+                        <div class="flex gap-3 items-center opacity-50">
+                            <span class="material-symbols-outlined animate-spin text-primary">sync</span>
+                            <p class="text-sm text-on-surface-variant">Cargando actividad...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- BottomNavBar (Mobile Only) -->
+    <nav class="md:hidden fixed bottom-6 left-margin-mobile right-margin-mobile flex justify-around p-4 z-50 liquid-glass rounded-full border border-white/60 shadow-2xl">
+        <a class="flex flex-col items-center justify-center text-primary scale-110 z-10 relative" href="index.html">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+            <span class="font-label-caps text-[10px] mt-1 font-bold">Inicio</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="inventory.html">
+            <span class="material-symbols-outlined">list</span>
+            <span class="font-label-caps text-[10px] mt-1">Inventario</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="analytics.html">
+            <span class="material-symbols-outlined">insights</span>
+            <span class="font-label-caps text-[10px] mt-1">Reportes</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 z-10 relative" href="settings.html">
+            <span class="material-symbols-outlined">person</span>
+            <span class="font-label-caps text-[10px] mt-1">Ajustes</span>
+        </a>
+    </nav>
+
+    <!-- Firebase App Logic -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

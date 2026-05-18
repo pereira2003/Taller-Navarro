@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Taller Navarro - Reportes</title>
+    
+    <!-- Scripts & Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="tailwind.config.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- jsPDF + AutoTable para generar PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        .btn-pdf {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, #5c5d6e 0%, #526069 100%);
+            color: white; padding: 0.75rem 1.5rem; border-radius: 9999px;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(92,93,110,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .btn-pdf:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-pdf:active { transform: scale(0.96); }
+        .btn-pdf:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; }
+    </style>
+</head>
+<body class="font-body-md text-on-background overflow-x-hidden selection:bg-primary-container">
+    
+    <!-- Background Decoration Blobs -->
+    <div class="blob w-[500px] h-[500px] bg-primary-container/40 top-[-10%] left-[-5%]"></div>
+    <div class="blob w-[600px] h-[600px] bg-secondary-container/30 top-[40%] right-[-10%]" style="animation-delay: -5s; animation-duration: 30s;"></div>
+    <div class="blob w-[400px] h-[400px] bg-tertiary-container/30 bottom-[-5%] left-[20%]" style="animation-delay: -10s;"></div>
+    
+    <!-- TopAppBar -->
+    <header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center max-w-[1440px] mx-auto liquid-glass mt-4 mx-margin-desktop px-6 py-3 rounded-full">
+        <div class="specular-highlight"></div>
+        <div class="flex items-center gap-6 relative z-10">
+            <span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Taller Navarro</span>
+            <nav class="hidden md:flex gap-4">
+                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="index.html">Resumen</a>
+                <a class="font-body-md text-on-surface-variant hover:bg-white/40 transition-all duration-300 px-3 py-1 rounded-full" href="inventory.html">Inventario</a>
+                <a class="font-body-md text-primary font-bold border-b-2 border-primary px-3 py-1" href="analytics.html">Reportes</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-3 relative z-10">
+            <div class="relative group">
+                <span class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-white/40 rounded-full transition-all cursor-pointer">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+            </div>
+            <span class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-white/40 rounded-full transition-all cursor-pointer">account_circle</span>
+        </div>
+    </header>
+
+    <!-- SideNavBar -->
+    <aside class="fixed left-0 top-24 z-40 hidden md:flex flex-col p-8 liquid-glass rounded-[2.5rem] m-margin-desktop w-64 shadow-2xl h-fit">
+        <div class="specular-highlight"></div>
+        <div class="mb-8 px-2 z-10">
+            <h2 class="font-headline-lg text-[20px] font-black text-primary">Consola Admin</h2>
+            <p class="text-on-surface-variant text-sm opacity-70">Red Taller Navarro</p>
+        </div>
+        <nav class="space-y-3 z-10">
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="index.html">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-body-md">Resumen</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="inventory.html">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span class="font-body-md">Inventario</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 liquid-glass !bg-primary/10 text-primary font-bold rounded-2xl transition-transform translate-x-1 border-white/50 shadow-none" href="analytics.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                <span class="font-body-md">Reportes</span>
+            </a>
+            <a class="flex items-center gap-3 p-3 text-on-surface-variant/80 hover:bg-white/40 transition-all rounded-2xl" href="settings.html">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="font-body-md">Ajustes</span>
+            </a>
+        </nav>
+        <button onclick="window.location='add-item.html'" class="mt-8 frosted-gradient-btn text-white py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 font-semibold shadow-xl active:scale-95 transition-transform z-10">
+            <span class="material-symbols-outlined">add</span>
+            Nuevo Item
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="pt-28 pb-24 px-margin-mobile lg:ml-80 lg:mr-margin-desktop lg:pt-32">
+        <section class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <h1 class="font-display-lg text-display-lg bg-clip-text text-transparent bg-gradient-to-r from-primary via-tertiary to-primary leading-none mb-2 filter drop-shadow-sm">
+                    Inteligencia Analítica
+                </h1>
+                <p class="font-body-md text-on-surface-variant max-w-xl">
+                    Visibilidad en tiempo real del rendimiento de su almacén. Descargue reportes en formato PDF con la información completa del inventario.
+                </p>
+            </div>
+            <!-- PDF Export Button -->
+            <button id="pdf-btn" class="btn-pdf" onclick="exportPDF()">
+                <span class="material-symbols-outlined" id="pdf-icon">picture_as_pdf</span>
+                <span id="pdf-text">Descargar Reporte PDF</span>
+            </button>
+        </section>
+
+        <!-- Analytics Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Key Metric: Warehouse Efficiency -->
+            <div class="md:col-span-2 liquid-glass p-8 rounded-[40px] flex flex-col gap-6">
+                <div class="specular-highlight"></div>
+                <div class="flex justify-between items-center relative z-10">
+                    <div>
+                        <h3 class="font-headline-lg text-xl text-primary">Eficiencia del Almacén</h3>
+                        <p class="text-sm text-on-surface-variant">Rendimiento de entrada y salida en los últimos 30 días</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md">En Vivo</span>
+                        <span class="px-3 py-1 bg-white/40 text-on-surface-variant rounded-full text-xs font-bold backdrop-blur-md">Mensual</span>
+                    </div>
+                </div>
+                <div class="h-64 w-full relative flex items-end justify-between px-2 overflow-hidden bg-white/10 rounded-3xl border border-white/30 z-10">
+                    <div class="absolute inset-0 flex flex-col justify-between opacity-10 pointer-events-none">
+                        <div class="border-t border-primary w-full"></div>
+                        <div class="border-t border-primary w-full"></div>
+                        <div class="border-t border-primary w-full"></div>
+                        <div class="border-t border-primary w-full"></div>
+                    </div>
+                    <svg class="absolute inset-0 w-full h-full p-4" preserveAspectRatio="none" viewBox="0 0 100 100">
+                        <path d="M0,80 Q10,75 20,85 T40,60 T60,70 T80,40 T100,50" fill="none" stroke="url(#lineGradient)" stroke-linecap="round" stroke-width="3"></path>
+                        <defs>
+                            <linearGradient id="lineGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                                <stop offset="0%" style="stop-color:#5c5d6e;stop-opacity:1"></stop>
+                                <stop offset="100%" style="stop-color:#d6e5ef;stop-opacity:1"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="w-full flex justify-around items-end h-full z-10 pb-8">
+                        <div class="w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_rgba(92,93,110,0.4)] border-2 border-white mb-12"></div>
+                        <div class="w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_rgba(92,93,110,0.4)] border-2 border-white mb-8"></div>
+                        <div class="w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_rgba(92,93,110,0.4)] border-2 border-white mb-20"></div>
+                        <div class="w-3 h-3 rounded-full bg-tertiary shadow-[0_0_15px_rgba(82,96,105,0.4)] border-2 border-white mb-14"></div>
+                        <div class="w-3 h-3 rounded-full bg-tertiary shadow-[0_0_15px_rgba(82,96,105,0.4)] border-2 border-white mb-24"></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-white/40 z-10">
+                    <div class="p-3 rounded-2xl bg-white/30">
+                        <p class="text-xs text-on-surface-variant uppercase font-bold tracking-widest mb-1">Entrantes</p>
+                        <p class="font-data-tabular text-2xl font-bold text-primary">+12.4%</p>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-white/30">
+                        <p class="text-xs text-on-surface-variant uppercase font-bold tracking-widest mb-1">Despachados</p>
+                        <p class="font-data-tabular text-2xl font-bold text-error">-2.1%</p>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-white/30">
+                        <p class="text-xs text-on-surface-variant uppercase font-bold tracking-widest mb-1">En Tránsito</p>
+                        <p class="font-data-tabular text-2xl font-bold text-on-surface">842</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="liquid-glass p-8 rounded-[40px] flex flex-col gap-6">
+                <div class="specular-highlight"></div>
+                <h3 class="font-headline-lg text-xl text-primary z-10">Distribución</h3>
+                <div class="relative w-52 h-52 mx-auto flex items-center justify-center z-10">
+                    <svg class="w-full h-full -rotate-90 drop-shadow-xl" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" fill="none" r="16" stroke="rgba(255,255,255,0.3)" stroke-width="4"></circle>
+                        <circle cx="18" cy="18" fill="none" r="16" stroke="#c5c5d8" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="4"></circle>
+                        <circle cx="18" cy="18" fill="none" r="16" stroke="#bac9d3" stroke-dasharray="25, 100" stroke-dashoffset="-75" stroke-linecap="round" stroke-width="4"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-white/20 rounded-full m-8 border border-white/50 shadow-inner">
+                        <span class="font-data-tabular text-3xl font-bold text-primary">12k</span>
+                        <span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-black">Unidades</span>
+                    </div>
+                </div>
+                <div class="space-y-3 mt-auto z-10">
+                    <div class="flex items-center justify-between p-3 rounded-2xl bg-white/30 border border-white/30">
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-full bg-primary-fixed shadow-lg shadow-primary-fixed/30"></div>
+                            <span class="text-sm font-bold">Repuestos</span>
+                        </div>
+                        <span class="font-data-tabular font-bold text-primary">75%</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-2xl bg-white/30 border border-white/30">
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-full bg-tertiary-fixed-dim shadow-lg shadow-tertiary-fixed-dim/30"></div>
+                            <span class="text-sm font-bold">Herramientas</span>
+                        </div>
+                        <span class="font-data-tabular font-bold text-tertiary">25%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movement Velocity -->
+            <div class="liquid-glass p-8 rounded-[40px] flex flex-col gap-6">
+                <div class="specular-highlight"></div>
+                <h3 class="font-headline-lg text-xl text-primary z-10">Flujo de Carga</h3>
+                <div class="flex-1 flex items-end justify-between gap-3 px-2 min-h-[160px] z-10">
+                    <div class="data-bar w-full bg-white/30 rounded-2xl relative group border border-white/40" style="height: 40%;">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-primary/30 to-primary-fixed rounded-2xl transition-all h-full group-hover:brightness-110 shadow-lg shadow-primary/10"></div>
+                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black text-primary">M</span>
+                    </div>
+                    <div class="data-bar w-full bg-white/30 rounded-2xl relative group border border-white/40" style="height: 70%;">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-primary/30 to-primary-fixed rounded-2xl transition-all h-full group-hover:brightness-110 shadow-lg shadow-primary/10"></div>
+                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black text-primary">T</span>
+                    </div>
+                    <div class="data-bar w-full bg-white/30 rounded-2xl relative group border border-white/40" style="height: 55%;">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-primary/30 to-primary-fixed rounded-2xl transition-all h-full group-hover:brightness-110 shadow-lg shadow-primary/10"></div>
+                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black text-primary">W</span>
+                    </div>
+                    <div class="data-bar w-full bg-white/30 rounded-2xl relative group border border-white/40" style="height: 90%;">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-tertiary/30 to-tertiary-fixed rounded-2xl transition-all h-full group-hover:brightness-110 shadow-lg shadow-tertiary/10"></div>
+                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black text-tertiary">T</span>
+                    </div>
+                    <div class="data-bar w-full bg-white/30 rounded-2xl relative group border border-white/40" style="height: 65%;">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-primary/30 to-primary-fixed rounded-2xl transition-all h-full group-hover:brightness-110 shadow-lg shadow-primary/10"></div>
+                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black text-primary">F</span>
+                    </div>
+                </div>
+                <p class="text-xs text-on-surface-variant bg-white/30 p-3 rounded-xl border border-white/30 text-center italic font-medium z-10">Actividad máxima los jueves (90% de capacidad)</p>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- BottomNavBar (Mobile Only) -->
+    <nav class="md:hidden fixed bottom-6 left-margin-mobile right-margin-mobile flex justify-around p-4 z-50 liquid-glass rounded-full border border-white/60 shadow-2xl">
+        <div class="specular-highlight"></div>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all relative z-10" href="index.html">
+            <span class="material-symbols-outlined">home</span>
+            <span class="font-label-caps text-[10px] uppercase font-black">Inicio</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all relative z-10" href="inventory.html">
+            <span class="material-symbols-outlined">list</span>
+            <span class="font-label-caps text-[10px] uppercase font-black">Items</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-primary scale-110 active:scale-95 transition-all relative z-10" href="analytics.html">
+            <div class="p-2 bg-primary/20 rounded-full mb-1">
+                <span class="material-symbols-outlined">insights</span>
+            </div>
+            <span class="font-label-caps text-[10px] uppercase font-black">Reportes</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant/60 active:scale-90 transition-all relative z-10" href="settings.html">
+            <span class="material-symbols-outlined">person</span>
+            <span class="font-label-caps text-[10px] uppercase font-black">Ajustes</span>
+        </a>
+    </nav>
+    <!-- PDF Export Logic -->
+    <script type="module">
+        import { onProducts } from "./firebase.js";
+
+        let cachedProducts = [];
+
+        // Keep products cache updated in real time
+        onProducts(products => { cachedProducts = products; });
+
+        window.exportPDF = async function() {
+            const btn  = document.getElementById("pdf-btn");
+            const icon = document.getElementById("pdf-icon");
+            const text = document.getElementById("pdf-text");
+
+            btn.disabled = true;
+            icon.textContent = "sync";
+            icon.classList.add("spin");
+            text.textContent = "Generando PDF...";
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+
+                // ── Header ────────────────────────────────────────────
+                const now = new Date();
+                const dateStr = now.toLocaleDateString("es-MX", {
+                    year: "numeric", month: "long", day: "numeric",
+                    hour: "2-digit", minute: "2-digit"
+                });
+
+                // Background header bar
+                doc.setFillColor(92, 93, 110);
+                doc.rect(0, 0, 297, 28, "F");
+
+                // Logo text
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.setFont("helvetica", "bold");
+                doc.text("TALLER NAVARRO", 14, 12);
+
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.text("Reporte completo de inventario", 14, 20);
+
+                // Date top-right
+                doc.setFontSize(8);
+                doc.text(`Generado: ${dateStr}`, 297 - 14, 20, { align: "right" });
+
+                // ── Summary stats ─────────────────────────────────────
+                const total      = cachedProducts.reduce((s, p) => s + Number(p.quantity || 0), 0);
+                const inStock    = cachedProducts.filter(p => p.status === "IN_STOCK").length;
+                const lowStock   = cachedProducts.filter(p => p.status === "LOW_STOCK").length;
+                const outOfStock = cachedProducts.filter(p => p.status === "OUT_OF_STOCK").length;
+                const totalValue = cachedProducts.reduce((s, p) => s + (Number(p.quantity || 0) * Number(p.unitCost || 0)), 0);
+
+                doc.setTextColor(60, 60, 80);
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "bold");
+
+                const stats = [
+                    [`Total productos: ${cachedProducts.length}`, `Total unidades: ${total.toLocaleString()}`,
+                     `En stock: ${inStock}`, `Stock bajo: ${lowStock}`,
+                     `Sin stock: ${outOfStock}`, `Valor total: $${totalValue.toFixed(2)}`]
+                ];
+
+                doc.autoTable({
+                    startY: 31,
+                    body: stats,
+                    theme: "plain",
+                    styles: { fontSize: 8, cellPadding: 2, textColor: [60, 60, 80] },
+                    columnStyles: {
+                        0: { fontStyle: "bold", textColor: [92, 93, 110] },
+                        1: { fontStyle: "bold", textColor: [92, 93, 110] },
+                        2: { textColor: [20, 120, 60] },
+                        3: { textColor: [200, 80, 30] },
+                        4: { textColor: [180, 26, 26] },
+                        5: { fontStyle: "bold", textColor: [40, 80, 120] }
+                    },
+                    margin: { left: 14, right: 14 }
+                });
+
+                // ── Main table ────────────────────────────────────────
+                const head = [[
+                    "#", "Nombre del Producto", "SKU", "Categoría",
+                    "Cantidad", "Umbral Reorden", "Estado",
+                    "Ubicación", "Proveedor", "Costo Unit."
+                ]];
+
+                const statusLabel = s => ({
+                    IN_STOCK: "En Stock", LOW_STOCK: "Stock Bajo", OUT_OF_STOCK: "Sin Stock"
+                }[s] || s || "—");
+
+                const body = cachedProducts.map((p, i) => [
+                    i + 1,
+                    p.name || "—",
+                    p.sku || "—",
+                    p.category || "—",
+                    Number(p.quantity || 0).toLocaleString(),
+                    p.reorderThreshold ? Number(p.reorderThreshold).toLocaleString() : "—",
+                    statusLabel(p.status),
+                    p.warehouseLocation || "—",
+                    p.supplier || "—",
+                    p.unitCost ? `$${Number(p.unitCost).toFixed(2)}` : "—"
+                ]);
+
+                if (body.length === 0) {
+                    body.push([{ content: "No hay productos en el inventario.", colSpan: 10, styles: { halign: "center", textColor: [150,150,150] } }]);
+                }
+
+                doc.autoTable({
+                    startY: doc.lastAutoTable.finalY + 6,
+                    head,
+                    body,
+                    theme: "grid",
+                    headStyles: {
+                        fillColor: [92, 93, 110],
+                        textColor: 255,
+                        fontStyle: "bold",
+                        fontSize: 8,
+                        cellPadding: 4
+                    },
+                    bodyStyles: { fontSize: 7.5, cellPadding: 3 },
+                    alternateRowStyles: { fillColor: [245, 246, 250] },
+                    columnStyles: {
+                        0:  { halign: "center", cellWidth: 8 },
+                        4:  { halign: "right" },
+                        5:  { halign: "right" },
+                        6:  { halign: "center",
+                              textColor: (cell) => {
+                                  const v = cell.raw;
+                                  if (v === "En Stock") return [20, 120, 60];
+                                  if (v === "Stock Bajo") return [200, 80, 30];
+                                  return [180, 26, 26];
+                              }
+                        },
+                        9:  { halign: "right" }
+                    },
+                    didParseCell(data) {
+                        if (data.column.index === 6 && data.section === "body") {
+                            const v = data.cell.raw;
+                            if (v === "En Stock")   data.cell.styles.textColor = [20, 120, 60];
+                            if (v === "Stock Bajo") data.cell.styles.textColor = [200, 80, 30];
+                            if (v === "Sin Stock")  data.cell.styles.textColor = [180, 26, 26];
+                        }
+                    },
+                    margin: { left: 14, right: 14 }
+                });
+
+                // ── Footer ────────────────────────────────────────────
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(7);
+                    doc.setTextColor(150);
+                    doc.text(
+                        `Taller Navarro • Página ${i} de ${pageCount} • ${dateStr}`,
+                        148.5, 205, { align: "center" }
+                    );
+                }
+
+                // ── Save ──────────────────────────────────────────────
+                const fileName = `inventario_${now.toISOString().slice(0,10)}.pdf`;
+                doc.save(fileName);
+
+            } catch(err) {
+                console.error("PDF error:", err);
+                alert("Error al generar el PDF: " + err.message);
+            } finally {
+                btn.disabled = false;
+                icon.textContent = "picture_as_pdf";
+                icon.classList.remove("spin");
+                text.textContent = "Descargar Reporte PDF";
+            }
+        };
+    </script>
+</body>
+</html>
