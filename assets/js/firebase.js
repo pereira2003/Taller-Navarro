@@ -58,6 +58,7 @@ export async function addProduct(data) {
   const status = computeStatus(data.quantity, data.reorderThreshold);
   return await addDoc(productsCol, {
     ...data,
+    year: Number(data.year) || 2026,
     status,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
@@ -72,7 +73,12 @@ export async function addProduct(data) {
 export async function updateProduct(id, data) {
   const status = computeStatus(data.quantity, data.reorderThreshold);
   const ref = doc(db, "products", id);
-  await updateDoc(ref, { ...data, status, updatedAt: serverTimestamp() });
+  await updateDoc(ref, {
+    ...data,
+    year: Number(data.year) || 2026,
+    status,
+    updatedAt: serverTimestamp()
+  });
 }
 
 /**
@@ -261,4 +267,70 @@ export async function seedData() {
     await logActivity(a.type, a.message);
   }
   console.log("✅ Database seeded successfully!");
+}
+
+/**
+ * Seed the database with the complete 2024 workshop inventory (49 tools).
+ * Usage: import { seed2024Data } from './firebase.js'; seed2024Data();
+ */
+export async function seed2024Data() {
+  const tools2024 = [
+    { name: "Alicates variados", sku: "2024-01", category: "general", quantity: 3, unitCost: 2.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Alicates de diferentes formas y tamaños" },
+    { name: "Amoladora", sku: "2024-02", category: "enderezado", quantity: 4, unitCost: 4.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Eléctrica portátil con motor giratorio" },
+    { name: "Autogena", sku: "2024-03", category: "enderezado", quantity: 1, unitCost: 65.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Equipo de soldadura y corte a gas" },
+    { name: "Barra de uña", sku: "2024-04", category: "enderezado", quantity: 2, unitCost: 4.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Barra de acero resistente" },
+    { name: "Botadores", sku: "2024-05", category: "enderezado", quantity: 2, unitCost: 3.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Para empujar y alinear paneles" },
+    { name: "Brocas para taladro", sku: "2024-06", category: "general", quantity: 2, unitCost: 4.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Juego completo de brocas métricas" },
+    { name: "Caballetes", sku: "2024-07", category: "general", quantity: 4, unitCost: 3.75, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Soportes estables para elevar el vehículo" },
+    { name: "Carro portaherramientas", sku: "2024-08", category: "general", quantity: 2, unitCost: 17.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Carro móvil para organizar herramientas" },
+    { name: "Cinta de enmascarar", sku: "2024-09", category: "pintura", quantity: 8, unitCost: 0.31, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Protectora para delimitar zonas de pintura" },
+    { name: "Cortadora de cinta", sku: "2024-10", category: "enderezado", quantity: 1, unitCost: 6.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Cortadora de cinta" },
+    { name: "Cargadores de baterias", sku: "2024-11", category: "general", quantity: 2, unitCost: 17.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Convierte corriente casa a DC" },
+    { name: "Colador de pintura", sku: "2024-12", category: "pintura", quantity: 10, unitCost: 0.04, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Filtro para eliminar impurezas" },
+    { name: "Compresor Pequeño", sku: "2024-13", category: "pintura", quantity: 0, unitCost: 80.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Fuente de aire comprimido" },
+    { name: "Compresor Grande", sku: "2024-14", category: "pintura", quantity: 1, unitCost: 500.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Fuente de aire comprimido" },
+    { name: "Corta alambres", sku: "2024-15", category: "general", quantity: 3, unitCost: 1.67, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Cortador para cables y alambres" },
+    { name: "Cadenas mecánicas", sku: "2024-16", category: "enderezado", quantity: 2, unitCost: 6.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Para jalar y estirar carrocería" },
+    { name: "Destornilladores", sku: "2024-17", category: "general", quantity: 2, unitCost: 5.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Juego completo (Phillips, planos, etc)" },
+    { name: "Dremel", sku: "2024-18", category: "general", quantity: 4, unitCost: 6.25, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Para desbastar diferentes tamaños" },
+    { name: "Equipo soldadura MIG", sku: "2024-19", category: "enderezado", quantity: 2, unitCost: 150.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Soldadora para unir metales" },
+    { name: "Equipo (spotter)", sku: "2024-20", category: "enderezado", quantity: 1, unitCost: 500.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Reparaciones rápidas sin perforar" },
+    { name: "Extanzores", sku: "2024-21", category: "enderezado", quantity: 2, unitCost: 15.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Expander para enderezar piezas" },
+    { name: "Extilzon", sku: "2024-22", category: "enderezado", quantity: 2, unitCost: 6.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Para aflojar o apretar tubos" },
+    { name: "Engrapadora plastico", sku: "2024-23", category: "general", quantity: 1, unitCost: 45.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Unir o sujetar materiales plásticos" },
+    { name: "Ele de enderezado", sku: "2024-24", category: "enderezado", quantity: 1, unitCost: 75.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Herramienta hidráulica de carrocería" },
+    { name: "Espátulas para masilla", sku: "2024-25", category: "general", quantity: 1, unitCost: 5.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Acero y plástico para masilla" },
+    { name: "Extensiones Electricas", sku: "2024-26", category: "general", quantity: 4, unitCost: 2.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Extensión de energía eléctrica" },
+    { name: "Extractores de Aire", sku: "2024-27", category: "pintura", quantity: 2, unitCost: 17.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Extractores de aire para ventilación de cabina" },
+    { name: "Gato elevador hidráulico", sku: "2024-28", category: "general", quantity: 2, unitCost: 22.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Gato portátil para levantar partes" },
+    { name: "Desmontaje guarnecidos", sku: "2024-29", category: "general", quantity: 2, unitCost: 6.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Kit para quitar plásticos sin dañar" },
+    { name: "Herramientas hidráulicas", sku: "2024-30", category: "enderezado", quantity: 2, unitCost: 25.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Set de herramientas hidráulicas de fuerza" },
+    { name: "Limado y cepillado", sku: "2024-31", category: "enderezado", quantity: 1, unitCost: 20.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Limas de chapa y cepillos metálicos" },
+    { name: "Impacto de Aire", sku: "2024-32", category: "enderezado", quantity: 2, unitCost: 22.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Herramientas de aire de impacto neumático" },
+    { name: "Hidrolavadora", sku: "2024-33", category: "general", quantity: 1, unitCost: 65.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Limpiar con agua a alta presión" },
+    { name: "Llaves combinadas", sku: "2024-34", category: "general", quantity: 4, unitCost: 5.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Llaves fijas y de estrella de taller" },
+    { name: "Juego de martillos", sku: "2024-35", category: "enderezado", quantity: 5, unitCost: 4.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Diferentes formas + patos apoyo" },
+    { name: "Ventosas con tirantas", sku: "2024-36", category: "general", quantity: 1, unitCost: 25.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Manejar cristales y paneles grandes" },
+    { name: "Lijadora acción dual (DA)", sku: "2024-37", category: "pintura", quantity: 2, unitCost: 22.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Neumática para lijado fino/grueso" },
+    { name: "Lijadora orbital", sku: "2024-38", category: "pintura", quantity: 4, unitCost: 6.25, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Lijadora para superficies planas" },
+    { name: "Lima para carrocería", sku: "2024-39", category: "enderezado", quantity: 2, unitCost: 5.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Para alisar bordes de chapa" },
+    { name: "Martillo de bola", sku: "2024-40", category: "general", quantity: 3, unitCost: 2.67, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Martillo multiuso de golpe seco" },
+    { name: "Martillo deslizante", sku: "2024-41", category: "enderezado", quantity: 2, unitCost: 12.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Tracción para abolladuras profundas" },
+    { name: "Mordazas y prensas", sku: "2024-42", category: "general", quantity: 4, unitCost: 2.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Herramientas de sujeción para chasis" },
+    { name: "Mica Hidraulica", sku: "2024-43", category: "enderezado", quantity: 1, unitCost: 50.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Sirve para levantar vehículos pesados" },
+    { name: "Mangera de Pintar", sku: "2024-44", category: "pintura", quantity: 2, unitCost: 5.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Usada en pintura automotriz" },
+    { name: "Palancas desabollado", sku: "2024-45", category: "enderezado", quantity: 5, unitCost: 2.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Separar y apalancar paneles metálicos" },
+    { name: "Pulidoras de corte", sku: "2024-46", category: "enderezado", quantity: 2, unitCost: 22.50, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Para desbastar pintura" },
+    { name: "Pinzas de presión", sku: "2024-47", category: "general", quantity: 4, unitCost: 3.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Locking y de punta fina de taller" },
+    { name: "Pistola de calor", sku: "2024-48", category: "general", quantity: 1, unitCost: 30.00, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Para ablandar adhesivos y plásticos" },
+    { name: "Pistola pintura HVLP", sku: "2024-49", category: "pintura", quantity: 6, unitCost: 3.33, year: 2024, warehouseLocation: "", supplier: "", imageUrl: "", reorderThreshold: 0, description: "Profesionales fondo, color, laca" }
+  ];
+
+  console.log("🌱 Sembrando inventario de 2024...");
+  for (const t of tools2024) {
+    await addProduct(t);
+    console.log(`  ✅ Agregado: ${t.name} (Año ${t.year})`);
+  }
+  await logActivity("audit", "Se cargó el inventario completo de herramientas de 2024 (49 items).");
+  console.log("✅ ¡Inventario de 2024 sembrado exitosamente!");
 }

@@ -106,14 +106,25 @@
                     </div>
                 </div>
 
-                <!-- Row 2: Category -->
-                <div>
-                    <label class="form-label" for="category">Categoría</label>
-                    <select id="category" class="form-input">
-                        <option value="general">General</option>
-                        <option value="pintura">Pintura</option>
-                        <option value="enderezado">Enderezado</option>
-                    </select>
+                <!-- Row 2: Category and Year -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="form-label" for="category">Categoría</label>
+                        <select id="category" class="form-input">
+                            <option value="general">General</option>
+                            <option value="pintura">Pintura</option>
+                            <option value="enderezado">Enderezado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="year">Año del Inventario</label>
+                        <select id="year" class="form-input font-data-tabular">
+                            <option value="2026" selected>2026 (Actual)</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Row 3: Quantity + Unit Cost -->
@@ -191,6 +202,7 @@
                 document.getElementById("name").value             = product.name || "";
                 document.getElementById("sku").value              = product.sku || "";
                 document.getElementById("category").value         = product.category || "general";
+                document.getElementById("year").value             = product.year || "2026";
                 document.getElementById("quantity").value         = product.quantity ?? "";
                 document.getElementById("unitCost").value         = product.unitCost ?? "";
                 document.getElementById("imageUrl").value         = product.imageUrl || "";
@@ -257,6 +269,7 @@
                 name:              document.getElementById("name").value.trim(),
                 sku:               document.getElementById("sku").value.trim(),
                 category:          document.getElementById("category").value,
+                year:              Number(document.getElementById("year").value) || 2026,
                 quantity:          Number(document.getElementById("quantity").value) || 0,
                 reorderThreshold:  0,
                 unitCost:          parseFloat(document.getElementById("unitCost").value) || 0,

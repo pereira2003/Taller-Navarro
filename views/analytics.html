@@ -102,14 +102,25 @@
                     Inteligencia Analítica
                 </h1>
                 <p class="font-body-md text-on-surface-variant max-w-xl">
-                    Visibilidad en tiempo real del rendimiento de su almacén. Descargue reportes en formato PDF con la información completa del inventario.
+                    Visibilidad en tiempo real del rendimiento de su almacén. Seleccione un año de inventario para filtrar y exportar su reporte personalizado.
                 </p>
             </div>
-            <!-- PDF Export Button -->
-            <button id="pdf-btn" class="btn-pdf" onclick="exportPDF()">
-                <span class="material-symbols-outlined" id="pdf-icon">picture_as_pdf</span>
-                <span id="pdf-text">Descargar Reporte PDF</span>
-            </button>
+            
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <!-- Year Selector Chips -->
+                <div class="flex gap-2 p-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-sm h-fit">
+                    <button data-year-filter="all" class="liquid-chip-active text-white px-4 py-1.5 rounded-full font-label-caps text-[11px] shadow-sm">Todos</button>
+                    <button data-year-filter="2026" class="liquid-chip text-on-surface-variant px-4 py-1.5 rounded-full font-label-caps text-[11px] hover:bg-white/50 transition-all specular-highlight">2026</button>
+                    <button data-year-filter="2025" class="liquid-chip text-on-surface-variant px-4 py-1.5 rounded-full font-label-caps text-[11px] hover:bg-white/50 transition-all specular-highlight">2025</button>
+                    <button data-year-filter="2024" class="liquid-chip text-on-surface-variant px-4 py-1.5 rounded-full font-label-caps text-[11px] hover:bg-white/50 transition-all specular-highlight">2024</button>
+                </div>
+
+                <!-- PDF Export Button -->
+                <button id="pdf-btn" class="btn-pdf" onclick="exportPDF()">
+                    <span class="material-symbols-outlined" id="pdf-icon">picture_as_pdf</span>
+                    <span id="pdf-text">Descargar PDF</span>
+                </button>
+            </div>
         </section>
 
         <!-- Analytics Bento Grid -->
@@ -258,9 +269,61 @@
         import { onProducts } from "../assets/js/firebase.js";
 
         let cachedProducts = [];
+        let activeYearFilter = "all";
+
+        // ── Year Filter chips ─────────────────────────────────────
+        const yearFilterBtns = document.querySelectorAll("[data-year-filter]");
+        yearFilterBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                yearFilterBtns.forEach(b => {
+                    b.classList.remove("liquid-chip-active", "text-white", "shadow-lg");
+                    b.classList.add("liquid-chip", "text-on-surface-variant");
+                });
+                btn.classList.add("liquid-chip-active", "text-white", "shadow-lg");
+                btn.classList.remove("liquid-chip", "text-on-surface-variant");
+                activeYearFilter = btn.dataset.yearFilter;
+                
+                // Recalculate stats dynamically
+                updateUIStats();
+            });
+        });
+
+        // ── Update statistics on the UI ───────────────────────────
+        function updateUIStats() {
+            let filtered = cachedProducts;
+            if (activeYearFilter !== "all") {
+                filtered = filtered.filter(p => (Number(p.year) || 2026) === Number(activeYearFilter));
+            }
+            
+            // Calculate total units
+            const totalQty = filtered.reduce((acc, p) => acc + Number(p.quantity || 0), 0);
+            
+            // Update central stats badge dynamically
+            const unitsCountElement = document.querySelector(".relative.w-52.h-52.mx-auto span.text-3xl");
+            if (unitsCountElement) {
+                unitsCountElement.textContent = totalQty >= 1000 ? `${(totalQty / 1000).toFixed(1)}k` : totalQty.toLocaleString();
+            }
+
+            // Update percentage of categories (Repuestos: general + enderezado, Herramientas: pintura)
+            const repuestosQty = filtered.filter(p => p.category === "general" || p.category === "enderezado").reduce((acc, p) => acc + Number(p.quantity || 0), 0);
+            const herramientasQty = filtered.filter(p => p.category === "pintura").reduce((acc, p) => acc + Number(p.quantity || 0), 0);
+            const grandTotal = repuestosQty + herramientasQty;
+            
+            const repuestosPct = grandTotal > 0 ? Math.round((repuestosQty / grandTotal) * 100) : 0;
+            const herramientasPct = grandTotal > 0 ? Math.round((herramientasQty / grandTotal) * 100) : 0;
+
+            const categoryLabels = document.querySelectorAll(".font-data-tabular.font-bold");
+            if (categoryLabels.length >= 2) {
+                categoryLabels[0].textContent = `${repuestosPct}%`;
+                categoryLabels[1].textContent = `${herramientasPct}%`;
+            }
+        }
 
         // Keep products cache updated in real time
-        onProducts(products => { cachedProducts = products; });
+        onProducts(products => {
+            cachedProducts = products;
+            updateUIStats();
+        });
 
         const loadLogo = () => {
             return new Promise((resolve) => {
@@ -279,7 +342,7 @@
             btn.disabled = true;
             icon.textContent = "sync";
             icon.classList.add("spin");
-            text.textContent = "Generando PDF...";
+            text.textContent = "Generando...";
 
             try {
                 const { jsPDF } = window.jspdf;
@@ -288,9 +351,9 @@
                 // Cargar logotipo de Taller Navarro sin fondo
                 const logoImg = await loadLogo();
 
-                // ── Header (Logo & Date) ──────────────────────────────
+                // ── Header (Logo & Date / Year) ───────────────────────
                 const now = new Date();
-                const yearStr = now.getFullYear();
+                const yearStr = activeYearFilter === "all" ? "Todos los Años" : `Año ${activeYearFilter}`;
 
                 if (logoImg) {
                     // Renderizar con la mejor calidad de la imagen HD escalada
@@ -336,14 +399,19 @@
                     return map[String(c).toLowerCase()] || String(c);
                 };
 
-                const body = cachedProducts.map((p) => {
+                let productsToExport = cachedProducts;
+                if (activeYearFilter !== "all") {
+                    productsToExport = productsToExport.filter(p => (Number(p.year) || 2026) === Number(activeYearFilter));
+                }
+
+                const body = productsToExport.map((p) => {
                     const qty = Number(p.quantity || 0);
                     const cost = Number(p.unitCost || 0);
                     const totalVal = qty * cost;
                     const cat = categoryLabel(p.category || "general");
                     return [
                         p.name || "—",
-                        `Item de taller (SKU: ${p.sku || "—"})`,
+                        p.description || `Item de taller (SKU: ${p.sku || "—"})`,
                         qty.toLocaleString(),
                         cat,
                         `$${totalVal.toFixed(2)}`
@@ -410,7 +478,8 @@
                 }
 
                 // ── Save ──────────────────────────────────────────────
-                const fileName = `inventario_taller_${now.toISOString().slice(0,10)}.pdf`;
+                const labelYear = activeYearFilter === "all" ? "completo" : activeYearFilter;
+                const fileName = `inventario_taller_${labelYear}_${now.toISOString().slice(0,10)}.pdf`;
                 doc.save(fileName);
 
             } catch(err) {

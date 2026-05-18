@@ -15,23 +15,51 @@ import {
 
 let unsubscribeProducts = null;
 let unsubscribeActivity = null;
+let cachedProducts = [];
+let activeYearFilter = "all";
+
+function updateDashboardStats() {
+  let filtered = cachedProducts;
+  if (activeYearFilter !== "all") {
+    filtered = filtered.filter(p => (Number(p.year) || 2026) === Number(activeYearFilter));
+  }
+
+  const total = filtered.reduce((sum, p) => sum + Number(p.quantity || 0), 0);
+  const inTransit = filtered.filter(p => p.status === "IN_STOCK").length;
+  const alerts = filtered.filter(p =>
+    p.status === "LOW_STOCK" || p.status === "OUT_OF_STOCK"
+  ).length;
+
+  const elTotal    = document.getElementById("stat-total");
+  const elTransit  = document.getElementById("stat-transit");
+  const elAlerts   = document.getElementById("stat-alerts");
+
+  if (elTotal)   elTotal.textContent   = total.toLocaleString();
+  if (elTransit) elTransit.textContent = inTransit.toLocaleString();
+  if (elAlerts)  elAlerts.textContent  = alerts.toLocaleString();
+}
 
 function initDashboard() {
   // Listen to products → update stat cards
   unsubscribeProducts = onProducts((products) => {
-    const total = products.reduce((sum, p) => sum + Number(p.quantity || 0), 0);
-    const inTransit = products.filter(p => p.status === "IN_STOCK").length;
-    const alerts = products.filter(p =>
-      p.status === "LOW_STOCK" || p.status === "OUT_OF_STOCK"
-    ).length;
+    cachedProducts = products;
+    updateDashboardStats();
+  });
 
-    const elTotal    = document.getElementById("stat-total");
-    const elTransit  = document.getElementById("stat-transit");
-    const elAlerts   = document.getElementById("stat-alerts");
-
-    if (elTotal)   elTotal.textContent   = total.toLocaleString();
-    if (elTransit) elTransit.textContent = inTransit.toLocaleString();
-    if (elAlerts)  elAlerts.textContent  = alerts.toLocaleString();
+  // Wire up year filter chips on Dashboard
+  const yearFilterBtns = document.querySelectorAll("[data-year-filter]");
+  yearFilterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      yearFilterBtns.forEach(b => {
+        b.classList.remove("liquid-chip-active", "text-white", "shadow-lg");
+        b.classList.add("liquid-chip", "text-on-surface-variant");
+      });
+      btn.classList.add("liquid-chip-active", "text-white", "shadow-lg");
+      btn.classList.remove("liquid-chip", "text-on-surface-variant");
+      activeYearFilter = btn.dataset.yearFilter;
+      
+      updateDashboardStats();
+    });
   });
 
   // Listen to recent activity → render feed
