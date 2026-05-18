@@ -14,22 +14,29 @@
         .gallery-container {
             perspective: 1200px;
             height: 520px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
             overflow: hidden;
             width: 100%;
+            contain: layout paint;
         }
         .gallery-card {
             position: absolute;
+            top: 50%;
+            left: 50%;
             width: 320px;
             height: 460px;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transition:
+                transform 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.25s ease;
             transform-style: preserve-3d;
+            transform-origin: center center;
             cursor: pointer;
             border-radius: 2.5rem;
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform, opacity;
+            isolation: isolate;
         }
         .gallery-card-inner {
             width: 100%;
@@ -37,6 +44,9 @@
             border-radius: 2.5rem;
             overflow: hidden;
             position: relative;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         .glass-overlay-bottom {
             background: linear-gradient(to top, rgba(16, 20, 24, 0.95) 0%, rgba(16, 20, 24, 0.5) 65%, transparent 100%);
@@ -445,6 +455,7 @@
             if (!cards.length) return;
             const compactCarousel = window.matchMedia("(max-width: 900px)").matches;
             const maxVisibleCards = compactCarousel ? 1 : 2;
+            const centerAnchor = "translate3d(-50%, -50%, 0)";
 
             cards.forEach((card, index) => {
                 const cardIndex = Number(card.dataset.index);
@@ -454,7 +465,7 @@
                 if (absDiff > maxVisibleCards) {
                     card.style.opacity = "0";
                     card.style.pointerEvents = "none";
-                    card.style.transform = `translateX(${diff > 0 ? 420 : -420}px) scale(0.72) rotateY(${diff > 0 ? -24 : 24}deg)`;
+                    card.style.transform = `${centerAnchor} translate3d(${diff > 0 ? 420 : -420}px, 0, -160px) rotateY(${diff > 0 ? -24 : 24}deg) scale(0.72)`;
                     card.style.zIndex = "0";
                     return;
                 }
@@ -476,7 +487,7 @@
                     card.classList.remove("active-card");
                 }
 
-                card.style.transform = `translateX(${translateX}px) scale(${scale}) rotateY(${rotateY}deg) translateZ(${translateZ}px)`;
+                card.style.transform = `${centerAnchor} translate3d(${translateX}px, 0, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
                 card.style.zIndex = (10 - absDiff).toString();
             });
 
@@ -614,6 +625,10 @@
                 galleryContainer.classList.remove("hidden");
 
                 const gallery = document.getElementById("products-gallery");
+                if (activeIndex >= filtered.length) {
+                    activeIndex = Math.max(0, filtered.length - 1);
+                }
+
                 const galleryItems = filtered
                     .map((p, index) => ({ p, index }))
                     .filter(({ index }) => !isMobileInventory() || Math.abs(index - activeIndex) <= 1);
@@ -700,10 +715,6 @@
                         }
                     });
                 });
-
-                if (activeIndex >= filtered.length) {
-                    activeIndex = Math.max(0, filtered.length - 1);
-                }
 
                 updateCarousel();
             }

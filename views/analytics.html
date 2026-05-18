@@ -421,6 +421,11 @@
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const pageCenter = pageWidth / 2;
+                const pdfMarginX = 14;
+                const tableWidth = pageWidth - (pdfMarginX * 2);
 
                 // Cargar logotipo de Taller Navarro sin fondo
                 const logoImg = await loadLogo();
@@ -452,12 +457,12 @@
                 doc.setFontSize(10);
                 doc.setTextColor(0, 0, 0);
                 doc.setFont("helvetica", "bold");
-                doc.text(`Fecha : ${yearStr}`, 210 - 14, 20, { align: "right" });
+                doc.text(`Fecha : ${yearStr}`, pageWidth - pdfMarginX, 20, { align: "right" });
 
                 // Título Centralizado
                 doc.setFontSize(13);
                 doc.setFont("helvetica", "bold");
-                doc.text("Inventario de Herramientas", 105, 33, { align: "center" });
+                doc.text("Inventario de Herramientas", pageCenter, 33, { align: "center" });
 
                 // ── Main table ────────────────────────────────────────
                 const head = [[
@@ -519,11 +524,11 @@
                         lineWidth: 0.1
                     },
                     columnStyles: {
-                        0: { halign: "left", cellWidth: 55 },
-                        1: { halign: "left", cellWidth: 65 },
-                        2: { halign: "center", fontStyle: "bold", cellWidth: 20 },
-                        3: { halign: "center", cellWidth: 32 },
-                        4: { halign: "right", fontStyle: "bold", cellWidth: 20 }
+                        0: { halign: "left", cellWidth: tableWidth * 0.29 },
+                        1: { halign: "left", cellWidth: tableWidth * 0.34 },
+                        2: { halign: "center", fontStyle: "bold", cellWidth: tableWidth * 0.105 },
+                        3: { halign: "center", cellWidth: tableWidth * 0.16 },
+                        4: { halign: "right", fontStyle: "bold", cellWidth: tableWidth * 0.105 }
                     },
                     didParseCell(data) {
                         // Align header text to match column align
@@ -535,7 +540,8 @@
                             }
                         }
                     },
-                    margin: { left: 14, right: 14 }
+                    margin: { left: pdfMarginX, right: pdfMarginX },
+                    tableWidth
                 });
 
                 // ── Footer ────────────────────────────────────────────
@@ -547,7 +553,7 @@
                     doc.setTextColor(150);
                     doc.text(
                         `Taller Navarro • Página ${i} de ${pageCount} • Descargado: ${dateStr}`,
-                        105, 287, { align: "center" }
+                        pageCenter, pageHeight - 10, { align: "center" }
                     );
                 }
 
