@@ -374,27 +374,41 @@
         const viewGridBtn = document.getElementById("view-grid-btn");
         const galleryContainer = document.getElementById("products-gallery-container");
 
+        function isMobileInventory() {
+            return window.matchMedia("(max-width: 767px)").matches;
+        }
+
+        function setView(view, shouldRender = true) {
+            currentView = view;
+            if (view === "gallery") {
+                viewGalleryBtn.classList.add("liquid-chip-active", "text-white");
+                viewGalleryBtn.classList.remove("liquid-chip", "text-on-surface-variant");
+                viewGridBtn.classList.remove("liquid-chip-active", "text-white");
+                viewGridBtn.classList.add("liquid-chip", "text-on-surface-variant");
+                galleryContainer.classList.remove("hidden");
+                grid.classList.add("hidden");
+            } else {
+                viewGridBtn.classList.add("liquid-chip-active", "text-white");
+                viewGridBtn.classList.remove("liquid-chip", "text-on-surface-variant");
+                viewGalleryBtn.classList.remove("liquid-chip-active", "text-white");
+                viewGalleryBtn.classList.add("liquid-chip", "text-on-surface-variant");
+                grid.classList.remove("hidden");
+                galleryContainer.classList.add("hidden");
+            }
+            if (shouldRender) renderProducts();
+        }
+
+        if (isMobileInventory()) {
+            setView("grid", false);
+        }
+
         // ── View Toggling ───────────────────────────────────────
         viewGalleryBtn.addEventListener("click", () => {
-            currentView = "gallery";
-            viewGalleryBtn.classList.add("liquid-chip-active", "text-white");
-            viewGalleryBtn.classList.remove("liquid-chip", "text-on-surface-variant");
-            viewGridBtn.classList.remove("liquid-chip-active", "text-white");
-            viewGridBtn.classList.add("liquid-chip", "text-on-surface-variant");
-            galleryContainer.classList.remove("hidden");
-            grid.classList.add("hidden");
-            renderProducts();
+            setView("gallery");
         });
 
         viewGridBtn.addEventListener("click", () => {
-            currentView = "grid";
-            viewGridBtn.classList.add("liquid-chip-active", "text-white");
-            viewGridBtn.classList.remove("liquid-chip", "text-on-surface-variant");
-            viewGalleryBtn.classList.remove("liquid-chip-active", "text-white");
-            viewGalleryBtn.classList.add("liquid-chip", "text-on-surface-variant");
-            grid.classList.remove("hidden");
-            galleryContainer.classList.add("hidden");
-            renderProducts();
+            setView("grid");
         });
 
         // ── Status badge config ─────────────────────────────────
@@ -414,7 +428,8 @@
             if (!cards.length) return;
 
             cards.forEach((card, index) => {
-                const diff = index - activeIndex;
+                const cardIndex = Number(card.dataset.index);
+                const diff = cardIndex - activeIndex;
                 const absDiff = Math.abs(diff);
                 const isMobile = window.matchMedia("(max-width: 767px)").matches;
                 
@@ -497,7 +512,7 @@
                     const catIcon = p.category === "pintura" ? "brush" : p.category === "enderezado" ? "car_repair" : "construction";
                     const imageHtml = hasUserImage ? `
                         <img alt="${p.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 image-rendering-crisp"
-                             src="${p.imageUrl}">
+                             src="${p.imageUrl}" loading="lazy" decoding="async">
                     ` : `
                         <div class="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/5 flex flex-col items-center justify-center gap-2 text-primary/30">
                             <span class="material-symbols-outlined text-[56px] transition-transform duration-500 group-hover:scale-110">
@@ -547,12 +562,16 @@
                 galleryContainer.classList.remove("hidden");
 
                 const gallery = document.getElementById("products-gallery");
-                gallery.innerHTML = filtered.map((p, index) => {
+                const galleryItems = filtered
+                    .map((p, index) => ({ p, index }))
+                    .filter(({ index }) => !isMobileInventory() || Math.abs(index - activeIndex) <= 1);
+
+                gallery.innerHTML = galleryItems.map(({ p, index }) => {
                     const qty = Number(p.quantity || 0);
                     const hasUserImage = !!p.imageUrl;
                     const catIcon = p.category === "pintura" ? "brush" : p.category === "enderezado" ? "car_repair" : "construction";
                     const imageHtml = hasUserImage ? `
-                        <img alt="${p.name}" class="absolute inset-0 w-full h-full object-cover z-0 image-rendering-crisp" src="${p.imageUrl}">
+                        <img alt="${p.name}" class="absolute inset-0 w-full h-full object-cover z-0 image-rendering-crisp" src="${p.imageUrl}" loading="lazy" decoding="async">
                     ` : `
                         <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/15 via-white/10 to-secondary/5 flex flex-col items-center justify-center gap-3 text-primary/40 z-0">
                             <div class="w-20 h-20 rounded-full bg-white/35 backdrop-blur-xl border border-white/50 flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform duration-700">
@@ -618,7 +637,11 @@
                         const index = parseInt(card.dataset.index);
                         if (activeIndex !== index) {
                             activeIndex = index;
-                            updateCarousel();
+                            if (isMobileInventory()) {
+                                renderProducts();
+                            } else {
+                                updateCarousel();
+                            }
                         } else {
                             const p = filtered[index];
                             window.location = `product-details.html?id=${p.id}`;
@@ -641,14 +664,22 @@
         prevBtn.addEventListener("click", () => {
             if (activeIndex > 0) {
                 activeIndex--;
-                updateCarousel();
+                if (isMobileInventory() && currentView === "gallery") {
+                    renderProducts();
+                } else {
+                    updateCarousel();
+                }
             }
         });
 
         nextBtn.addEventListener("click", () => {
             if (activeIndex < filteredProducts.length - 1) {
                 activeIndex++;
-                updateCarousel();
+                if (isMobileInventory() && currentView === "gallery") {
+                    renderProducts();
+                } else {
+                    updateCarousel();
+                }
             }
         });
 
@@ -658,18 +689,21 @@
             if (e.key === "ArrowLeft") {
                 if (activeIndex > 0) {
                     activeIndex--;
-                    updateCarousel();
+                    if (isMobileInventory()) renderProducts();
+                    else updateCarousel();
                 }
             } else if (e.key === "ArrowRight") {
                 if (activeIndex < filteredProducts.length - 1) {
                     activeIndex++;
-                    updateCarousel();
+                    if (isMobileInventory()) renderProducts();
+                    else updateCarousel();
                 }
             }
         });
 
         window.addEventListener("resize", () => {
-            if (currentView === "gallery") updateCarousel();
+            if (isMobileInventory() && currentView === "gallery") renderProducts();
+            else if (currentView === "gallery") updateCarousel();
         });
 
         // ── Delete handler ───────────────────────────────────────
