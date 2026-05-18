@@ -97,12 +97,12 @@
                 <!-- Row 1: Name + SKU -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="form-label" for="name">Nombre del Producto *</label>
-                        <input id="name" class="form-input" type="text" placeholder="Ej. Filtro de Aceite" required>
+                        <label class="form-label" for="name">Nombre del Item/Repuesto *</label>
+                        <input id="name" class="form-input" type="text" placeholder="Ej. Filtro de Aceite, Soldador, Lija" required>
                     </div>
                     <div>
-                        <label class="form-label" for="sku">Código SKU *</label>
-                        <input id="sku" class="form-input font-data-tabular" type="text" placeholder="Ej. SKU-0001" required>
+                        <label class="form-label" for="sku">Código SKU / Parte *</label>
+                        <input id="sku" class="form-input font-data-tabular" type="text" placeholder="Ej. SKU-0001, PART-99" required>
                     </div>
                 </div>
 
@@ -110,7 +110,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="form-label" for="category">Categoría</label>
-                        <input id="category" class="form-input" type="text" placeholder="Ej. Repuestos, Herramientas">
+                        <select id="category" class="form-input">
+                            <option value="general">General</option>
+                            <option value="pintura">Pintura</option>
+                            <option value="enderezado">Enderezado</option>
+                        </select>
                     </div>
                     <div>
                         <label class="form-label" for="supplier">Proveedor</label>
@@ -118,15 +122,11 @@
                     </div>
                 </div>
 
-                <!-- Row 3: Quantity + Threshold + Unit Cost -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Row 3: Quantity + Unit Cost -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="form-label" for="quantity">Cantidad *</label>
                         <input id="quantity" class="form-input font-data-tabular" type="number" min="0" placeholder="0" required>
-                    </div>
-                    <div>
-                        <label class="form-label" for="reorderThreshold">Límite de Reorden</label>
-                        <input id="reorderThreshold" class="form-input font-data-tabular" type="number" min="0" placeholder="50">
                     </div>
                     <div>
                         <label class="form-label" for="unitCost">Costo Unitario (USD)</label>
@@ -202,10 +202,9 @@
                 }
                 document.getElementById("name").value             = product.name || "";
                 document.getElementById("sku").value              = product.sku || "";
-                document.getElementById("category").value         = product.category || "";
+                document.getElementById("category").value         = product.category || "general";
                 document.getElementById("supplier").value         = product.supplier || "";
                 document.getElementById("quantity").value         = product.quantity ?? "";
-                document.getElementById("reorderThreshold").value = product.reorderThreshold ?? "";
                 document.getElementById("unitCost").value         = product.unitCost ?? "";
                 document.getElementById("warehouseLocation").value= product.warehouseLocation || "";
                 document.getElementById("imageUrl").value         = product.imageUrl || "";
@@ -233,7 +232,6 @@
         // ── Status preview ────────────────────────────────────────
         function updateStatusPreview() {
             const qty = Number(document.getElementById("quantity").value);
-            const thr = Number(document.getElementById("reorderThreshold").value) || 0;
             const preview = document.getElementById("status-preview");
             const label = document.getElementById("status-label");
             const icon = document.getElementById("status-icon");
@@ -242,14 +240,11 @@
             preview.classList.remove("hidden");
             if (qty <= 0) {
                 label.textContent = "SIN STOCK"; icon.textContent = "error"; label.className = "text-sm font-bold text-error"; desc.textContent = "Sin unidades disponibles.";
-            } else if (qty <= thr) {
-                label.textContent = "STOCK BAJO"; icon.textContent = "warning"; label.className = "text-sm font-bold text-error"; desc.textContent = `${qty} unidades — por debajo del límite de ${thr}.`;
             } else {
                 label.textContent = "EN EXISTENCIA"; icon.textContent = "check_circle"; label.className = "text-sm font-bold text-primary"; desc.textContent = `${qty} unidades disponibles.`;
             }
         }
         document.getElementById("quantity").addEventListener("input", updateStatusPreview);
-        document.getElementById("reorderThreshold").addEventListener("input", updateStatusPreview);
 
         // ── Toast ─────────────────────────────────────────────────
         function showToast(msg, icon = "check_circle") {
@@ -275,10 +270,10 @@
             const data = {
                 name:              document.getElementById("name").value.trim(),
                 sku:               document.getElementById("sku").value.trim(),
-                category:          document.getElementById("category").value.trim(),
+                category:          document.getElementById("category").value,
                 supplier:          document.getElementById("supplier").value.trim(),
                 quantity:          Number(document.getElementById("quantity").value) || 0,
-                reorderThreshold:  Number(document.getElementById("reorderThreshold").value) || 0,
+                reorderThreshold:  0,
                 unitCost:          parseFloat(document.getElementById("unitCost").value) || 0,
                 warehouseLocation: document.getElementById("warehouseLocation").value.trim(),
                 imageUrl:          document.getElementById("imageUrl").value.trim()
