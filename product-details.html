@@ -8,7 +8,7 @@
     <script src="tailwind.config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="font-body-md text-on-surface">
     <!-- Decorative Background Elements -->
@@ -183,7 +183,7 @@
     </nav>
 
     <script type="module">
-        import { getProduct, formatRelativeTime } from "./firebase.js";
+        import { getProduct, formatRelativeTime } from "./assets/js/firebase.js";
 
         const params  = new URLSearchParams(location.search);
         const id      = params.get("id");
