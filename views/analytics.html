@@ -424,8 +424,9 @@
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
                 const pageCenter = pageWidth / 2;
-                const pdfMarginX = 14;
-                const tableWidth = pageWidth - (pdfMarginX * 2);
+                const tableWidth = 158;
+                const tableLeft = (pageWidth - tableWidth) / 2;
+                const tableRight = tableLeft + tableWidth;
 
                 // Cargar logotipo de Taller Navarro sin fondo
                 const logoImg = await loadLogo();
@@ -436,33 +437,33 @@
 
                 if (logoImg) {
                     // Renderizar con la mejor calidad de la imagen HD escalada
-                    doc.addImage(logoImg, 'PNG', 14, 8, 24, 16, undefined, 'FAST');
+                    doc.addImage(logoImg, 'PNG', tableLeft + 4, 13, 13, 9, undefined, 'FAST');
                 } else {
                     // Dibuja el logotipo circular del Taller Navarro
                     doc.setDrawColor(32, 92, 189); // Azul Taller #205cbd
-                    doc.setLineWidth(0.6);
-                    doc.circle(24, 20, 10, "D");
+                    doc.setLineWidth(0.35);
+                    doc.circle(tableLeft + 10.5, 18, 5.5, "D");
                     doc.setLineWidth(0.2);
-                    doc.circle(24, 20, 8.8, "D");
+                    doc.circle(tableLeft + 10.5, 18, 4.8, "D");
 
-                    doc.setFontSize(6.5);
+                    doc.setFontSize(4.2);
                     doc.setTextColor(32, 92, 189);
                     doc.setFont("helvetica", "bold");
-                    doc.text("TALLER", 24, 18.5, { align: "center" });
-                    doc.setFontSize(5.5);
-                    doc.text("NAVARRO", 24, 22.5, { align: "center" });
+                    doc.text("TALLER", tableLeft + 10.5, 17.5, { align: "center" });
+                    doc.setFontSize(3.6);
+                    doc.text("NAVARRO", tableLeft + 10.5, 19.7, { align: "center" });
                 }
 
                 // Fecha a la derecha
-                doc.setFontSize(10);
+                doc.setFontSize(5.5);
                 doc.setTextColor(0, 0, 0);
                 doc.setFont("helvetica", "bold");
-                doc.text(`Fecha : ${yearStr}`, pageWidth - pdfMarginX, 20, { align: "right" });
+                doc.text(`Fecha : ${yearStr}`, tableRight, 22, { align: "right" });
 
                 // Título Centralizado
-                doc.setFontSize(13);
+                doc.setFontSize(7);
                 doc.setFont("helvetica", "bold");
-                doc.text("Inventario de Herramientas", pageCenter, 33, { align: "center" });
+                doc.text("Inventario de Herramientas", pageCenter, 27, { align: "center" });
 
                 // ── Main table ────────────────────────────────────────
                 const head = [[
@@ -478,11 +479,18 @@
                     return map[String(c).toLowerCase()] || String(c);
                 };
 
-                let productsToExport = cachedProducts;
+                let productsToExport = cachedProducts.slice();
                 if (activeYearFilter !== "all") {
                     productsToExport = productsToExport.filter(p => (Number(p.year) || 2026) === Number(activeYearFilter));
                 }
+                productsToExport.sort((a, b) => (a.name || "").localeCompare(b.name || "", "es", {
+                    sensitivity: "base",
+                    numeric: true
+                }));
 
+                const grandTotal = productsToExport.reduce((sum, p) => {
+                    return sum + (Number(p.quantity || 0) * Number(p.unitCost || 0));
+                }, 0);
                 const body = productsToExport.map((p) => {
                     const qty = Number(p.quantity || 0);
                     const cost = Number(p.unitCost || 0);
@@ -499,10 +507,15 @@
 
                 if (body.length === 0) {
                     body.push([{ content: "No hay herramientas registradas en el inventario.", colSpan: 5, styles: { halign: "center", textColor: [150,150,150] } }]);
+                } else {
+                    body.push([
+                        { content: "TOTAL", colSpan: 4, styles: { halign: "left", fontStyle: "bold" } },
+                        `$${grandTotal.toFixed(2)}`
+                    ]);
                 }
 
                 doc.autoTable({
-                    startY: 37,
+                    startY: 30,
                     head,
                     body,
                     theme: "grid",
@@ -510,25 +523,28 @@
                         fillColor: [32, 92, 189], // Azul clásico #205cbd
                         textColor: [255, 255, 255],
                         fontStyle: "bold",
-                        fontSize: 9,
-                        cellPadding: 3,
+                        fontSize: 4.6,
+                        cellPadding: { top: 0.7, right: 0.9, bottom: 0.7, left: 0.9 },
                         halign: "left"
                     },
                     bodyStyles: {
-                        fontSize: 8,
-                        cellPadding: 3,
+                        fontSize: 4.3,
+                        cellPadding: { top: 0.55, right: 0.9, bottom: 0.55, left: 0.9 },
                         textColor: [0, 0, 0]
                     },
                     styles: {
-                        lineColor: [180, 180, 180],
-                        lineWidth: 0.1
+                        lineColor: [150, 150, 150],
+                        lineWidth: 0.08,
+                        overflow: "linebreak",
+                        minCellHeight: 2.6,
+                        valign: "middle"
                     },
                     columnStyles: {
-                        0: { halign: "left", cellWidth: tableWidth * 0.29 },
-                        1: { halign: "left", cellWidth: tableWidth * 0.34 },
-                        2: { halign: "center", fontStyle: "bold", cellWidth: tableWidth * 0.105 },
-                        3: { halign: "center", cellWidth: tableWidth * 0.16 },
-                        4: { halign: "right", fontStyle: "bold", cellWidth: tableWidth * 0.105 }
+                        0: { halign: "left", cellWidth: tableWidth * 0.22 },
+                        1: { halign: "left", cellWidth: tableWidth * 0.36 },
+                        2: { halign: "center", fontStyle: "bold", cellWidth: tableWidth * 0.08 },
+                        3: { halign: "center", cellWidth: tableWidth * 0.20 },
+                        4: { halign: "right", fontStyle: "bold", cellWidth: tableWidth * 0.14 }
                     },
                     didParseCell(data) {
                         // Align header text to match column align
@@ -539,22 +555,28 @@
                                 data.cell.styles.halign = "right";
                             }
                         }
+                        if (data.section === "body" && data.row.raw?.[0]?.content === "TOTAL") {
+                            data.cell.styles.fillColor = [141, 211, 164];
+                            data.cell.styles.textColor = [0, 45, 20];
+                            data.cell.styles.fontStyle = "bold";
+                        }
                     },
-                    margin: { left: pdfMarginX, right: pdfMarginX },
+                    didDrawPage() {
+                        doc.setDrawColor(185, 185, 185);
+                        doc.setLineWidth(0.25);
+                        doc.rect(tableLeft, 12, tableWidth, pageHeight - 30);
+                    },
+                    margin: { left: tableLeft, right: tableLeft, top: 18, bottom: 17 },
                     tableWidth
                 });
 
                 // ── Footer ────────────────────────────────────────────
                 const pageCount = doc.internal.getNumberOfPages();
-                const dateStr = now.toLocaleDateString("es-MX", { year: "numeric", month: "2-digit", day: "2-digit" });
                 for (let i = 1; i <= pageCount; i++) {
                     doc.setPage(i);
                     doc.setFontSize(7);
-                    doc.setTextColor(150);
-                    doc.text(
-                        `Taller Navarro • Página ${i} de ${pageCount} • Descargado: ${dateStr}`,
-                        pageCenter, pageHeight - 10, { align: "center" }
-                    );
+                    doc.setTextColor(0);
+                    doc.text(String(i), pageCenter, pageHeight - 8, { align: "center" });
                 }
 
                 // ── Save ──────────────────────────────────────────────
